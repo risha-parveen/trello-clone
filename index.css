@@ -1,0 +1,33 @@
+body{
+    background:rgb(252, 235, 238);
+}
+
+.main-board{
+    background-color: pink;
+    padding:none;
+    height:800px;
+    width:85% ;
+    margin:0 auto;
+    border-radius: 10px;
+}
+
+.left-board{
+    background-color:rgb(245, 245, 160);
+    float:left;
+    width:45%;
+    height:80%;
+    margin-left:3%;
+    margin-top:10%;
+    border-radius: 10px;
+    
+}
+
+.right-board{
+    background-color:rgb(243, 213, 157) ;
+    float:right;
+    width:45%;
+    height:80%;
+    margin-right:3%;
+    margin-top:10%;
+    border-radius: 10px;
+}
