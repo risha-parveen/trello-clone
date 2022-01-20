@@ -1,5 +1,7 @@
+
 .container{
     display:flex;
+    justify-content: start;
     position:absolute;
     background:linear-gradient(to bottom right,purple,white);
     top: 0px;
@@ -48,5 +50,19 @@
     font-size: xx-small;   
 }
 
+button{
+    font-size: xx-small;
+    padding: 10px 15px;
+    background-color: #1e6e1e;
+    color:white;
+    margin-top:5px;
+    border-radius:3px;
+    border:none;
+    transition:0.4s ease;
+}
+
+.add-item:hover{
+    background-color: #2dac2d;   
+}
 
 
