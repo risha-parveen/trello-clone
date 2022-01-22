@@ -6,11 +6,52 @@ const containerBox=document.getElementsByClassName("container-box")
 const card=document.getElementsByClassName("card")
 const cardArea=document.getElementsByClassName("card-area")
 
+let dragItem=null
 
-content={
-    "0":-1,
-    "1":-1,
-    "2":-1
+for(let i=0;i<cardArea.length;i++){
+    cardArea[i].addEventListener('dragstart',dragStart,false)
+    cardArea[i].addEventListener('drag',drag,false)
+    cardArea[i].addEventListener('dragend',dragEnd,false)
+    cardArea[i].addEventListener('dragover',dragOver,false)
+    cardArea[i].addEventListener('dragenter',dragEnter,false)
+    cardArea[i].addEventListener('dragleave',dragLeave,false)
+    cardArea[i].addEventListener('drop',Drop,false)
+}
+
+function dragStart(e){
+    dragItem=e.target
+    setTimeout(()=>{
+        e.target.display="none"
+    },0)
+}
+
+function drag(e){
+    setTimeout(()=>{
+        e.target.style.display="none"
+    },0)
+}
+
+function dragEnd(e){
+    setTimeout(()=>{
+        e.target.style.display="block"
+    },0)
+    dragItem=null
+}
+
+function Drop(e){
+    this.append(dragItem)
+}
+
+function dragOver(e){
+    e.preventDefault()
+}
+
+function dragEnter(e){
+    e.preventDefault()
+}
+
+function dragLeave(e){
+    e.target.style.border="2px cyan"
 }
 
 for(let i=0;i<addBtn.length;i++){
@@ -22,13 +63,8 @@ for(let i=0;i<addBtn.length;i++){
 }
 
 const addCard=(box_no)=>{
-    content[box_no]+=1
-    
     const cardnode=`
-        <div class="card" id="card-${content[box_no]}" draggable="true" >
-            ${textArea[box_no].value}
-        </div>
-        <div class="drop-space"></div>
+        <div class="card" draggable="true" >${textArea[box_no].value}</div>
     `
     cardArea[box_no].innerHTML+=cardnode
     textArea[box_no].value=""

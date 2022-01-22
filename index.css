@@ -39,19 +39,20 @@ body{
     cursor: pointer;
 }
 
+.card-area{
+    padding-top:20px;
+    padding-bottom:10px;
+}
+
 .card{
     background-color: rgb(255, 255, 255);
     padding:10px;
+    margin-top:10px;
+    margin-bottom:5px;
     border-radius: 5px;
     box-shadow: 1px 1px 5px grey;    
     overflow-wrap: break-word;
     
-}
-
-.drop-space{
-    background-color: blue;
-    padding:20px;
-    margin:0;
 }
 
 .items textarea{
@@ -90,4 +91,8 @@ button{
 
 p{
     color:black;
+}
+
+#draggable div{
+    background-color: crimson;
 }
