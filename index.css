@@ -43,10 +43,15 @@ body{
     background-color: rgb(255, 255, 255);
     padding:10px;
     border-radius: 5px;
-    margin-top:10px;
-    box-shadow: 1px 1px 5px grey;
-    
+    box-shadow: 1px 1px 5px grey;    
     overflow-wrap: break-word;
+    
+}
+
+.drop-space{
+    background-color: blue;
+    padding:20px;
+    margin:0;
 }
 
 .items textarea{
@@ -55,7 +60,6 @@ body{
     box-sizing: border-box;
     outline:none;
     padding:10px 15px;
-    margin-top: 10px;
     font-size: x-small;
     color:rgb(83, 77, 77);
     border:0px;

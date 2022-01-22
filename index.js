@@ -3,6 +3,9 @@ const addBtn=document.getElementsByClassName("add-item")
 const textArea=document.getElementsByClassName("text-area")
 const items=document.getElementsByClassName("items")
 const containerBox=document.getElementsByClassName("container-box")
+const card=document.getElementsByClassName("card")
+const cardArea=document.getElementsByClassName("card-area")
+
 
 content={
     "0":-1,
@@ -20,13 +23,14 @@ for(let i=0;i<addBtn.length;i++){
 
 const addCard=(box_no)=>{
     content[box_no]+=1
-
-    const card=`
-        <div class="card" id="card-${content[box_no]}">
+    
+    const cardnode=`
+        <div class="card" id="card-${content[box_no]}" draggable="true" >
             ${textArea[box_no].value}
         </div>
+        <div class="drop-space"></div>
     `
-    items[box_no].insertAdjacentHTML("beforebegin",card)
+    cardArea[box_no].innerHTML+=cardnode
     textArea[box_no].value=""
-    console.log(content)
 }
+
