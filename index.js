@@ -5,6 +5,7 @@ const items=document.getElementsByClassName("items")
 const containerBox=document.getElementsByClassName("container-box")
 const card=document.getElementsByClassName("card")
 const cardArea=document.getElementsByClassName("card-area")
+const deleteCardBtn=document.getElementsByClassName("delete-card")
 
 let dragItem=null
 
@@ -14,7 +15,6 @@ for(let i=0;i<cardArea.length;i++){
     cardArea[i].addEventListener('dragend',dragEnd,false)
     cardArea[i].addEventListener('dragover',dragOver,false)
     cardArea[i].addEventListener('dragenter',dragEnter,false)
-    cardArea[i].addEventListener('dragleave',dragLeave,false)
     cardArea[i].addEventListener('drop',Drop,false)
 }
 
@@ -50,23 +50,27 @@ function dragEnter(e){
     e.preventDefault()
 }
 
-function dragLeave(e){
-    e.target.style.border="2px cyan"
-}
-
 for(let i=0;i<addBtn.length;i++){
     addBtn[i].addEventListener("click",()=>{
+        //console.log(addBtn[i])
         if(textArea[i].value.trim().length!=0){
             addCard(i)        
         }
     })
 }
 
+
+
 const addCard=(box_no)=>{
     const cardnode=`
-        <div class="card" draggable="true" >${textArea[box_no].value}</div>
+        <div class="card" draggable="true" >${textArea[box_no].value}<button class="delete-card">x</button></div>
     `
     cardArea[box_no].innerHTML+=cardnode
     textArea[box_no].value=""
-}
 
+    for(let i=0;i<cardArea[box_no].children.length;i++){
+        cardArea[box_no].children[i].lastElementChild.addEventListener("dblclick",e=>{
+            e.target.parentNode.remove()
+        })
+    }
+}
