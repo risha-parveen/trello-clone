@@ -1,13 +1,17 @@
 const express=require('express')
+const Datastore=require('nedb')
 const app=express()
-const path=require('path')
-const router=express.Router()
 
-router.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname+'/public/'))
+app.use(express.static('public'))
+app.use(express.json())
+
+const database=new Datastore('database.db')
+database.loadDatabase()
+
+app.post('/',(req,res)=>{
+    const data=req.body
+    database.insert(data)
+    res.json(data)
 })
 
-app.use("/static", express.static('./static/'))
-
-app.use('/',router)
 app.listen(5000)
