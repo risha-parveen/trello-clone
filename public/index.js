@@ -9,57 +9,66 @@ const deleteCardBtn=document.getElementsByClassName("delete-card")
 const columnTitle=document.getElementsByClassName("column-title")
 
 const model={
-    to_do:[],
-    doing:[],
-    done:[]
+    'To Do':[],
+    'Doing':[],
+    'Done':[]
 }
 
-let title=""
-let description=""
+let title,description=null 
 
 let content=null
 
 let dragItem=null
 
-for(let i=0;i<cardArea.length;i++){
-    cardArea[i].addEventListener('dragstart',dragStart,false)
-    cardArea[i].addEventListener('drag',drag,false)
-    cardArea[i].addEventListener('dragend',dragEnd,false)
-    cardArea[i].addEventListener('dragover',dragOver,false)
-    cardArea[i].addEventListener('dragenter',dragEnter,false)
-    cardArea[i].addEventListener('drop',Drop,false)
+let startColumn,endColumn,startIndex,endIndex=null
+
+for(let col=0;col<cardArea.length;col++){
+    cardArea[col].addEventListener('dragstart',e=>{
+        dragItem=e.target
+        setTimeout(()=>{
+            e.target.display="none"
+        },0)
+        startColumn=col
+        startIndex=e.target.id
+    })
+
+    cardArea[col].addEventListener('drag',e=>{
+        setTimeout(()=>{
+            e.target.style.display="none"
+        },0)
+    })
+
+    cardArea[col].addEventListener('dragend',e=>{
+        setTimeout(()=>{
+            e.target.style.display="block"
+        },0)
+        dragItem=null
+    })
+
+    cardArea[col].addEventListener('dragover',e=>{
+        e.preventDefault()
+    })
+
+    cardArea[col].addEventListener('dragenter',e=>{
+        e.preventDefault()
+    })
+
+    cardArea[col].addEventListener('drop',e=>{
+        e.currentTarget.append(dragItem)
+        endColumn=col
+        updateCardOnDrag()
+    })
 }
 
-function dragStart(e){
-    dragItem=e.target
-    setTimeout(()=>{
-        e.target.display="none"
-    },0)
+const updateCardOnDrag=()=>{
+    if(startColumn!=endColumn){
+        updateBox()
+    }
 }
 
-function drag(e){
-    setTimeout(()=>{
-        e.target.style.display="none"
-    },0)
-}
-
-function dragEnd(e){
-    setTimeout(()=>{
-        e.target.style.display="block"
-    },0)
-    dragItem=null
-}
-
-function Drop(e){
-    this.append(dragItem)
-}
-
-function dragOver(e){
-    e.preventDefault()
-}
-
-function dragEnter(e){
-    e.preventDefault()
+const updateBox=()=>{
+    box[startColumn]-=1
+    box[endColumn]+=1
 }
 
 for(let i=0;i<addBtn.length;i++){
@@ -70,25 +79,39 @@ for(let i=0;i<addBtn.length;i++){
     })
 }
 
+const box={
+    "0":-1,
+    "1":-1,
+    "2":-1
+}
+
 const addCard=(box_no)=>{
+    box[box_no]+=1
     const cardnode=`
-        <div class="card" draggable="true" >${textArea[box_no].value}<button class="delete-card">x</button></div>
+        <div class="card" id="${box[box_no]}" draggable="true" >
+            ${textArea[box_no].value}
+            <button class="delete-card">x</button>
+        </div>
     `
     cardArea[box_no].innerHTML+=cardnode
 
     title=columnTitle[box_no].innerHTML
     description=textArea[box_no].value
-    let str=title
-    console.log(model[str])
-    //postData(model)
+
+    let idValue=box[box_no]
+    model[title].push({idValue,description})
+    
+    postData(model)
 
     textArea[box_no].value=""
 
     for(let i=0;i<cardArea[box_no].children.length;i++){
         cardArea[box_no].children[i].lastElementChild.addEventListener("dblclick",e=>{
             e.target.parentNode.remove()
+            box[box_no]-=1
         })
     }
+    console.log(box)
 }
 
 //fetch post
@@ -106,19 +129,6 @@ async function postData(content){
     console.log(json)
 }
 
-const myCar = {
-    make: 'Ford',
-    model: 'Mustang',
-    year: 1969
-  };
-
-let propertyName = 'make';
-myCar[propertyName] = 'Ford';
-
-propertyName = 'model';
-myCar[propertyName] = 'Mustang';
-
-console.log(myCar[propertyName])
 
 
 
