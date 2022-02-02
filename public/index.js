@@ -8,19 +8,13 @@ const cardArea=document.getElementsByClassName("card-area")
 const deleteCardBtn=document.getElementsByClassName("delete-card")
 const columnTitle=document.getElementsByClassName("column-title")
 
-const model={
-    'To Do':[],
-    'Doing':[],
-    'Done':[]
-}
-
 let title,description=null 
 
 let content=null
 
 let dragItem=null
 
-let startColumn,endColumn,startIndex,endIndex=null
+let startColumn,endColumn=null
 
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
@@ -28,8 +22,8 @@ for(let col=0;col<cardArea.length;col++){
         setTimeout(()=>{
             e.target.display="none"
         },0)
+
         startColumn=col
-        startIndex=e.target.id
     })
 
     cardArea[col].addEventListener('drag',e=>{
@@ -85,6 +79,12 @@ const box={
     "2":-1
 }
 
+const model={
+    'To Do':[],
+    'Doing':[],
+    'Done':[]
+}
+
 const addCard=(box_no)=>{
     box[box_no]+=1
     const cardnode=`
@@ -97,9 +97,10 @@ const addCard=(box_no)=>{
 
     title=columnTitle[box_no].innerHTML
     description=textArea[box_no].value
+    let column=title
 
     let idValue=box[box_no]
-    model[title].push({idValue,description})
+    model[title].push({idValue,description,column})
     
     postData(model)
 
