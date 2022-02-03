@@ -4,43 +4,35 @@ const mongoose=require('mongoose')
 const { collection } = require('./models/schema')
 const app=express()
 
-mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
+main().catch(err=>console.log(err))
+async function main(){
+    await mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
+}
 
+const Database=require('./models/schema')
 
 app.use(express.urlencoded({extended:false}))
 
 app.use(express.static('public'))
 app.use(express.json())
 
-const Database=require('./models/schema')
-//database.loadDatabase()
-
-let dbid=null
-let doc=null
-
-app.post('/save',(req,res)=>{
-    Database.find({})
-    .then(result=>{
-        doc=result
-        console.log(doc)
-    })
-    if(doc){
+app.post('/save',async (req,res)=>{
+    let result=await Database.find({})
+    console.log(result)
+    if(result===[]){
         console.log("not empty")
     }
     else{
         console.log("empty")
-        /*Database.insertOne({
+        const db=new Database({
             id:req.body.id,
-            'To Do':req.body['To Do'],
-            'Doing':req.body['Doing'],
-            'Done':req.body['Done']
-        }).then(result=>console.log(result))*/
+            'To Do':[req.body['To Do']],
+            'Doing':[req.body['Doing']],
+            'Done':[req.body['Done']]
+        })
+        console.log(db.Done)
+        await db.save()
     }
-})
-
-app.post('/',(req,res)=>{
-    const data=req.body
-    res.json(data)
 })
 
 app.listen(5000)
