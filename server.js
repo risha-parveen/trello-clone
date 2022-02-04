@@ -148,26 +148,23 @@ app.post('/save',async (req,res)=>{
     if(result.length!==0){
         switch(req.body.title){
             case 'To Do':
-                result[0]['To Do'].push({
-                    cardId:req.body.cardId,
-                    description:req.body.description
-                })
+                title='To Do'
                 break
             case 'Doing':
-                result[0]['Doing'].push({
-                    cardId:req.body.cardId,
-                    description:req.body.description
-                })
+                title='Doing'
                 break
             case 'Done':
-                result[0]['Done'].push({
-                    cardId:req.body.cardId,
-                    description:req.body.description
-                })
+                title='Done'
                 break
             default:
                 //nothing
         }
+        cardId=cardIdNotExistAlready(result[0][title],req.body.cardId)
+        description=req.body.description
+        result[0][title].push({
+            cardId:cardId,
+            description:description
+        })
         try{
             await Database.replaceOne({id:'id'},result[0],{upsert:true})
             
