@@ -219,4 +219,16 @@ app.post('/save',async (req,res)=>{
     }
 })
 
+app.get('/get_data',async (req,res)=>{
+    try{
+        result=await Database.find({})
+        res.json(result)
+    }
+    catch(error){
+        res.status(500).send({
+            success:false
+        })
+    }
+})
+
 app.listen(5000)
