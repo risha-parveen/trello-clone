@@ -16,14 +16,69 @@ app.use(express.urlencoded({extended:false}))
 app.use(express.static('public'))
 app.use(express.json())
 
-let result,delresult,delId,delTitle=null
+let result,delresult,moveresult,delId,delTitle=null
+
+app.post('/move',async (req,res)=>{
+    try{
+        moveresult=await Database.find({})
+    }
+    catch(error){
+        res.status(500).send({
+            action:"empty",
+            success:false
+        })
+    }
+    if(moveresult.length!==0){
+        let cardId=req.body.cardId
+        let from=req.body.from
+        let to=req.body.to
+        let index=req.body.index
+
+        //delete the card from the from column
+        let i=null
+        let array=moveresult[0][from]
+        let ind=array.findIndex(i=>{
+            return (i.cardId===cardId)
+        })
+
+        if(ind===-1){
+            res.status(200).send({
+                action:"nothing to move",
+                success:true
+            })
+            return
+        }
+        moveresult[0][from].splice(ind,1)
+
+        let moved_card={
+            cardId:cardId,
+            description:req.body.description
+        }
+        //add the card to the new column
+        moveresult[0][to].splice(index,0,moved_card)
+        try{
+            await Database.replaceOne({id:'id'},moveresult[0],{upsert:true})           
+            res.status(200).send({
+                action:"moved the card",
+                success:true
+            })
+        }catch(error){
+            console.log(error)
+            res.status(500).send({
+                action:"could not move",
+                success:false
+            })
+            return
+        }
+    }
+})
 
 app.post('/delete',async (req,res)=>{
     try{
         delresult=await Database.find({})
     }catch(error){
         res.status(500).send({
-            action:"failed to delete",
+            action:"empty",
             success:false
         })
     }
@@ -63,6 +118,10 @@ app.post('/delete',async (req,res)=>{
         }
     }
 })
+
+const cardIdNotExistAlready=(array,cardId)=>{
+    
+}
 
 app.post('/save',async (req,res)=>{
     try{
