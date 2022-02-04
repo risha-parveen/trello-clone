@@ -16,11 +16,57 @@ app.use(express.urlencoded({extended:false}))
 app.use(express.static('public'))
 app.use(express.json())
 
-let result=null
+let result,delresult,delId,delTitle=null
+
+app.post('/delete',async (req,res)=>{
+    try{
+        delresult=await Database.find({})
+    }catch(error){
+        res.status(500).send({
+            action:"failed to delete",
+            success:false
+        })
+    }
+    if(delresult.length!==0){
+        delId=req.body.cardId
+        delTitle=req.body.title
+        delDesc=req.body.description
+        let i=null
+        let array=delresult[0][delTitle]
+        let ind=array.findIndex(i=>{
+            return (i.cardId===delId && i.description===delDesc)
+        })
+
+        if(ind===-1){
+            res.status(500).send({
+                action:"nothing to delete",
+                success:false
+            })
+            return
+        }
+        delresult[0][delTitle].splice(ind,1)
+        
+        try{
+            await Database.replaceOne({id:'id'},delresult[0],{upsert:true})
+            
+            res.status(200).send({
+                action:"deleted",
+                success:true
+            })
+        }catch(error){
+            console.log(error)
+            res.status(500).send({
+                action:"could not delete",
+                success:false
+            })
+            return
+        }
+    }
+})
 
 app.post('/save',async (req,res)=>{
     try{
-        result=await Database.find({}) 
+        result=await Database.find({id:req.body.id}) 
     }
     catch(error){
         res.status(500).send({
@@ -53,8 +99,7 @@ app.post('/save',async (req,res)=>{
                 //nothing
         }
         try{
-            console.log(result)
-            await Database.replaceOne({id:'id'},result[0],{upsert:true}).then(result=>console.log(result))
+            await Database.replaceOne({id:'id'},result[0],{upsert:true})
             
             res.status(200).send({
                 action:"updated",
@@ -71,7 +116,7 @@ app.post('/save',async (req,res)=>{
     }
     else{
         let new_data={
-            id:'id',
+            id:req.body.id,
             'To Do':[],
             'Doing':[],
             'Done':[]
