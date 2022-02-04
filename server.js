@@ -48,14 +48,19 @@ app.post('/move',async (req,res)=>{
             })
             return
         }
+
         moveresult[0][from].splice(ind,1)
+        cardId=cardIdNotExistAlready(moveresult[0][to],cardId)
+        console.log(cardId)
 
         let moved_card={
             cardId:cardId,
             description:req.body.description
         }
         //add the card to the new column
+
         moveresult[0][to].splice(index,0,moved_card)
+
         try{
             await Database.replaceOne({id:'id'},moveresult[0],{upsert:true})           
             res.status(200).send({
@@ -72,6 +77,16 @@ app.post('/move',async (req,res)=>{
         }
     }
 })
+
+const cardIdNotExistAlready=(array,cardId)=>{
+    for(let i in array){
+        if(array[i].cardId===cardId){
+            cardId+=1
+        }
+    }
+    return cardId
+}
+
 
 app.post('/delete',async (req,res)=>{
     try{
@@ -118,10 +133,6 @@ app.post('/delete',async (req,res)=>{
         }
     }
 })
-
-const cardIdNotExistAlready=(array,cardId)=>{
-    
-}
 
 app.post('/save',async (req,res)=>{
     try{
