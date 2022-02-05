@@ -50,6 +50,7 @@ app.post('/move',async (req,res)=>{
         }
 
         moveresult[0][from].splice(ind,1)
+        
         cardId=cardIdNotExistAlready(moveresult[0][to],cardId)
         console.log(cardId)
 
@@ -223,7 +224,6 @@ app.post('/save',async (req,res)=>{
                 success:false
             })
         }
-        console.log(result)
     }
 })
 
