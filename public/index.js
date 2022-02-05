@@ -16,14 +16,13 @@ let dragItem=null
 
 let startColumn,endColumn=null
 
+// drag and drop functionality=>
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
         dragItem=e.target
         setTimeout(()=>{
             e.target.display="none"
         },0)
-
-        startColumn=col
     })
 
     cardArea[col].addEventListener('drag',e=>{
@@ -49,88 +48,80 @@ for(let col=0;col<cardArea.length;col++){
 
     cardArea[col].addEventListener('drop',e=>{
         e.currentTarget.append(dragItem)
-        endColumn=col
-        updateCardOnDrag()
     })
 }
 
-const updateCardOnDrag=()=>{
-    if(startColumn!=endColumn){
-        updateBox()
-    }
-}
+// added event listener for the button
 
-const updateBox=()=>{
-    box[startColumn]-=1
-    box[endColumn]+=1
-}
-
-for(let i=0;i<addBtn.length;i++){
-    addBtn[i].addEventListener("click",()=>{
-        if(textArea[i].value.trim().length!=0){
-            addCard(i)        
+for(let box_no=0; box_no<addBtn.length; box_no++){
+    addBtn[box_no].addEventListener("click",()=>{
+        if(textArea[box_no].value.trim().length!=0){
+            description=textArea[box_no].value
+            addCard(box_no,description)        
         }
     })
 }
 
-const box={
-    "0":-1,
-    "1":-1,
-    "2":-1
-}
-
-const model={
-    'To Do':[],
-    'Doing':[],
-    'Done':[]
-}
-
-const addCard=(box_no)=>{
-    box[box_no]+=1
+const addCard=(box_no,description)=>{
     const cardnode=`
-        <div class="card" id="${box[box_no]}" draggable="true" >
-            ${textArea[box_no].value}
+        <div class="card" draggable="true" >
+            ${description}
             <button class="delete-card">x</button>
         </div>
     `
     cardArea[box_no].innerHTML+=cardnode
 
-    title=columnTitle[box_no].innerHTML
-    description=textArea[box_no].value
-    let column=title
-
-    let idValue=box[box_no]
-    model[title].push({idValue,description,column})
-    
-    postData(model)
-
     textArea[box_no].value=""
 
+    addDeleteCardEventListener(box_no)
+}
+
+const addDeleteCardEventListener=box_no=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
         cardArea[box_no].children[i].lastElementChild.addEventListener("dblclick",e=>{
             e.target.parentNode.remove()
-            box[box_no]-=1
         })
     }
-    console.log(box)
 }
 
-//fetch post
-async function postData(content){
-    const options={
-        method:'POST',
-        headers:{
-            'Content-Type':'application/json'
-        },
-        body:JSON.stringify(content)
-    }
+let id=null
 
-    const response= await fetch('/',options)
+const renderData=(json)=>{
+    let data=json[0]
+    for(let i in data){
+        switch(i){
+            case "id":
+                id="id"
+                break
+            case "To Do":
+                title="To Do"
+                box_no=0
+                break
+            case "Doing":
+                title="Doing"
+                box_no=1
+                break
+            case "Done":
+                title="Done"
+                box_no=2
+                break
+            default:
+                continue
+        }
+        for(let j in data[title]){
+            description=data[title][j].description
+            cardId=data[title][j].cardId
+            addCard(box_no,description)
+        }
+    }
+}
+
+const getData = async ()=>{
+    const response = await fetch('/get_data')
     const json=await response.json()
     console.log(json)
+    if(json.length===0) return
+    renderData(json)
 }
 
-
-
-
-
+window.onload=getData
