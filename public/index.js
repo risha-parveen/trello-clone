@@ -81,9 +81,9 @@ const addCard=(box_no)=>{
     cardArea[box_no].innerHTML+=cardnode
     textArea[box_no].value=""
 
-    /*for(let i=0;i<cardArea[box_no].children.length;i++){
-        cardArea[box_no].children[i].lastElementChild.addEventListener("dblclick",e=>{
-            e.target.parentNode.remove()
+    for(let i=0;i<cardArea[box_no].children.length;i++){
+        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',e=>{
+            e.target.parentNode.parentNode.remove()
         })
-    }*/
+    }
 }
