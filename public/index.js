@@ -68,7 +68,7 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
     })
 }
 
-const addCard=(box_no,description)=>{
+const addCard=async (box_no,description)=>{
     const cardnode=`
         <div class="card-combo" draggable="true">
             <div class="card">
@@ -79,16 +79,31 @@ const addCard=(box_no,description)=>{
         </div>
     `
     cardArea[box_no].innerHTML+=cardnode
+    await saveData({id:'id',title:columnTitle[box_no].innerHTML,cardId:1,description:description})
+    .then(getData(true)
+    .then(result=>console.log(result))
+    )
 
     textArea[box_no].value=""
 
-    addDeleteCardEventListener(box_no)
+    addDeleteCardEventListener(box_no,description,true)
 }
 
-const addDeleteCardEventListener=box_no=>{
+const addDeleteCardEventListener=(box_no,description,newly)=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
         if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
         cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',e=>{
+            //storing the index of the current card being deleted
+            const index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
+           
+            cardId=json[0][columnTitle[box_no].innerHTML] 
+            data={
+                id:'id',
+                title:columnTitle[box_no].innerHTML,
+                cardId:cardId[index-1].cardId,
+                description:cardId[index-1].description
+            }
+            deleteData(data)
             e.target.parentNode.parentNode.remove()
         })
     }
@@ -121,17 +136,68 @@ const renderData=(json)=>{
         for(let j in data[title]){
             description=data[title][j].description
             cardId=data[title][j].cardId
-            addCard(box_no,description)
+
+            const cardnode=`
+                <div class="card-combo" draggable="true">
+                    <div class="card">
+                        ${description}
+                        <button class="delete-card">x</button>
+                    </div>
+                    <div class="card-drop"></div>
+                </div>
+            `
+            cardArea[box_no].innerHTML+=cardnode
+            addDeleteCardEventListener(box_no,description,false)
         }
     }
 }
 
-const getData = async ()=>{
+let json=null
+
+const getData = async (newly)=>{
     const response = await fetch('/get_data')
-    const json=await response.json()
-    console.log(json)
-    if(json.length===0) return
-    renderData(json)
+    json=await response.json()
+    if(newly===false)
+        renderData(json)
 }
 
-window.onload=getData
+const saveData= async (contents)=>{
+    const response=await fetch('/save',{
+        method:'POST',
+        headers:{
+            'Accept':'application/json',
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(contents)
+    })
+    const result=await response.json()
+    console.log(result)
+}
+
+const deleteData= async (contents)=>{
+    const response=await fetch('/delete',{
+        method:'POST',
+        headers:{
+            'Accept':'application/json',
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(contents)
+    })
+    const result=await response.json()
+    console.log(result)
+}
+
+const moveData= async (contents)=>{
+    const response=await fetch('/move',{
+        method:'POST',
+        headers:{
+            'Accept':'application/json',
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(contents)
+    })
+    const result=await response.json()
+    console.log(result)
+}
+
+window.onload=getData(false)

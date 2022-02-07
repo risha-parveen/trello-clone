@@ -18,6 +18,14 @@ app.use(express.json())
 
 let result,delresult,moveresult,delId,delTitle=null
 
+//move
+//id
+//cardId
+//index
+//from
+//to
+//description
+
 app.post('/move',async (req,res)=>{
     try{
         moveresult=await Database.find({})
@@ -88,6 +96,11 @@ const cardIdNotExistAlready=(array,cardId)=>{
     return cardId
 }
 
+//delete:
+//id
+//cardId
+//description
+//title
 
 app.post('/delete',async (req,res)=>{
     try{
@@ -110,6 +123,8 @@ app.post('/delete',async (req,res)=>{
 
         if(ind===-1){
             res.status(500).send({
+                cardId:delId,
+                description:delDesc,
                 action:"nothing to delete",
                 success:false
             })
@@ -135,6 +150,12 @@ app.post('/delete',async (req,res)=>{
     }
 })
 
+//save:
+//id 
+//title
+//cardId
+//description
+
 app.post('/save',async (req,res)=>{
     try{
         result=await Database.find({id:req.body.id}) 
@@ -147,6 +168,7 @@ app.post('/save',async (req,res)=>{
         return
     }
     if(result.length!==0){
+        console.log(req.body.title)
         switch(req.body.title){
             case 'To Do':
                 title='To Do'
@@ -160,6 +182,7 @@ app.post('/save',async (req,res)=>{
             default:
                 //nothing
         }
+        console.log(req.body.title)
         cardId=cardIdNotExistAlready(result[0][title],req.body.cardId)
         description=req.body.description
         result[0][title].push({
