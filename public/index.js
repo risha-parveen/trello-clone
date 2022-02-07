@@ -14,12 +14,34 @@ let content=null
 
 let dragItem=null
 
-let startColumn,endColumn=null
+let json=null
+
+let index=null
+
+let id=null
+
+let from,to=null
+
+async function main(){
+    var data;
+    await deleteData();
+    document.body.write(data);
+}
+  
+main();
 
 // drag and drop functionality=>
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
         dragItem=e.target
+        from=columnTitle[col].innerHTML
+        const index1=Array.prototype.indexOf.call(e.target.parentNode.children, e.target)
+        console.log(index1)
+
+
+        cardId=getCardId(json[0][from],index)
+        console.log(cardId)
+        //console.log(json[0][from])
         setTimeout(()=>{
             e.target.display="none"
         },0)
@@ -49,12 +71,31 @@ for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('drop',e=>{
         if(e.target.className==="card-drop"){
             insertAfter(dragItem,e.target.parentNode)
+            index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.children, e.target.parentNode)
+            //console.log(e.target.parentNode.parentNode.children)
+            //console.log(e.target.parentNode)
+            to=columnTitle[col].innerHTML
+            id='id'
+            //console.log(json[0][from])
+            data={
+                id:id,
+                from:from,
+                to:to,
+                cardId:cardId,
+                index:index
+            }
+            console.log(data)
+            moveData(data).then(result=>console.log(result))
         }
     })
 }
 
 function insertAfter(newNode, existingNode) {
     existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+}
+
+const getCardId=(array,index)=>{
+    console.log(array)
 }
 
 // added event listener for the button
@@ -66,6 +107,30 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
             addCard(box_no,description)        
         }
     })
+}
+
+const addDeleteCardEventListener=async (box_no,description,newly)=>{
+    for(let i=0;i<cardArea[box_no].children.length;i++){
+        if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
+        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',e=>{
+            //storing the index of the current card being deleted
+            const index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
+           
+            arrays=json[0][columnTitle[box_no].innerHTML] 
+            data={
+                id:'id',
+                title:columnTitle[box_no].innerHTML,
+                cardId:arrays[index-1].cardId,
+                description:arrays[index-1].description
+            }
+            console.log(data)
+            let json1=null
+            //console.log(json[0])
+            await deleteData(data).then(res=>json1=res)
+            console.log(json1)
+            e.target.parentNode.parentNode.remove()
+        })
+    }
 }
 
 const addCard=async (box_no,description)=>{
@@ -80,36 +145,12 @@ const addCard=async (box_no,description)=>{
     `
     cardArea[box_no].innerHTML+=cardnode
     await saveData({id:'id',title:columnTitle[box_no].innerHTML,cardId:1,description:description})
-    .then(getData(true)
-    .then(result=>console.log(result))
-    )
-
+    .then(getData(true))
+    console.log(json[0s])
     textArea[box_no].value=""
 
     addDeleteCardEventListener(box_no,description,true)
 }
-
-const addDeleteCardEventListener=(box_no,description,newly)=>{
-    for(let i=0;i<cardArea[box_no].children.length;i++){
-        if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
-        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',e=>{
-            //storing the index of the current card being deleted
-            const index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
-           
-            cardId=json[0][columnTitle[box_no].innerHTML] 
-            data={
-                id:'id',
-                title:columnTitle[box_no].innerHTML,
-                cardId:cardId[index-1].cardId,
-                description:cardId[index-1].description
-            }
-            deleteData(data)
-            e.target.parentNode.parentNode.remove()
-        })
-    }
-}
-
-let id=null
 
 const renderData=(json)=>{
     let data=json[0]
@@ -152,13 +193,15 @@ const renderData=(json)=>{
     }
 }
 
-let json=null
+
 
 const getData = async (newly)=>{
     const response = await fetch('/get_data')
     json=await response.json()
+    
     if(newly===false)
         renderData(json)
+    return json
 }
 
 const saveData= async (contents)=>{
@@ -183,8 +226,9 @@ const deleteData= async (contents)=>{
         },
         body:JSON.stringify(contents)
     })
-    const result=await response.json()
-    console.log(result)
+    let result=await response.json()
+    json=await getData(true)
+    return json
 }
 
 const moveData= async (contents)=>{

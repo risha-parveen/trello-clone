@@ -21,10 +21,9 @@ let result,delresult,moveresult,delId,delTitle=null
 //move
 //id
 //cardId
-//index
+//index:0 to n-1
 //from
 //to
-//description
 
 app.post('/move',async (req,res)=>{
     try{
@@ -56,15 +55,16 @@ app.post('/move',async (req,res)=>{
             })
             return
         }
-
+        description=moveresult[0][from][ind].description
         moveresult[0][from].splice(ind,1)
         
         cardId=cardIdNotExistAlready(moveresult[0][to],cardId)
         console.log(cardId)
+        
 
         let moved_card={
             cardId:cardId,
-            description:req.body.description
+            description:description
         }
         //add the card to the new column
 
