@@ -22,14 +22,6 @@ let id=null
 
 let from,to=null
 
-async function main(){
-    var data;
-    await deleteData();
-    document.body.write(data);
-}
-  
-main();
-
 // drag and drop functionality=>
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
@@ -43,7 +35,7 @@ for(let col=0;col<cardArea.length;col++){
         console.log(cardId)
         //console.log(json[0][from])
         setTimeout(()=>{
-            e.target.display="none"
+            //e.target.visibility="hidden"
         },0)
     })
 
@@ -55,7 +47,8 @@ for(let col=0;col<cardArea.length;col++){
 
     cardArea[col].addEventListener('dragend',e=>{
         setTimeout(()=>{
-            e.target.style.display="block"
+            //e.target.style.display="block"
+            console.log(e.target)
         },0)
         dragItem=null
     })
@@ -68,7 +61,7 @@ for(let col=0;col<cardArea.length;col++){
         e.preventDefault()
     })
 
-    cardArea[col].addEventListener('drop',e=>{
+    cardArea[col].addEventListener('drop',async e=>{
         if(e.target.className==="card-drop"){
             insertAfter(dragItem,e.target.parentNode)
             index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.children, e.target.parentNode)
@@ -85,7 +78,8 @@ for(let col=0;col<cardArea.length;col++){
                 index:index
             }
             console.log(data)
-            moveData(data).then(result=>console.log(result))
+            console.log(dragItem.style.visibility="hidden")
+            await moveData(data)
         }
     })
 }
@@ -109,10 +103,29 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
     })
 }
 
+const deleteData= async (contents)=>{
+    try{
+        const response=await fetch('/delete',{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(contents)
+        })
+        let result=await response.json()
+        json=await getData(true)
+        return json 
+    }catch(e){
+        console.log(e)
+    }
+    
+}
+
 const addDeleteCardEventListener=async (box_no,description,newly)=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
         if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
-        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',e=>{
+        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',async e=>{
             //storing the index of the current card being deleted
             const index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
            
@@ -124,11 +137,10 @@ const addDeleteCardEventListener=async (box_no,description,newly)=>{
                 description:arrays[index-1].description
             }
             console.log(data)
-            let json1=null
-            //console.log(json[0])
-            await deleteData(data).then(res=>json1=res)
-            console.log(json1)
+            await deleteData(data)
             e.target.parentNode.parentNode.remove()
+        
+            
         })
     }
 }
@@ -141,12 +153,12 @@ const addCard=async (box_no,description)=>{
                 <button class="delete-card">x</button>
             </div>
             <div class="card-drop"></div>
-        </div>
-    `
-    cardArea[box_no].innerHTML+=cardnode
+        </div>`
+    
     await saveData({id:'id',title:columnTitle[box_no].innerHTML,cardId:1,description:description})
-    .then(getData(true))
-    console.log(json[0s])
+  
+    cardArea[box_no].innerHTML+=cardnode
+    console.log(json[0])
     textArea[box_no].value=""
 
     addDeleteCardEventListener(box_no,description,true)
@@ -217,19 +229,7 @@ const saveData= async (contents)=>{
     console.log(result)
 }
 
-const deleteData= async (contents)=>{
-    const response=await fetch('/delete',{
-        method:'POST',
-        headers:{
-            'Accept':'application/json',
-            'Content-Type':'application/json'
-        },
-        body:JSON.stringify(contents)
-    })
-    let result=await response.json()
-    json=await getData(true)
-    return json
-}
+
 
 const moveData= async (contents)=>{
     const response=await fetch('/move',{
@@ -241,6 +241,8 @@ const moveData= async (contents)=>{
         body:JSON.stringify(contents)
     })
     const result=await response.json()
+    json=await getData(true)
+    return json 
     console.log(result)
 }
 
