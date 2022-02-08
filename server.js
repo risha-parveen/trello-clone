@@ -183,7 +183,7 @@ app.post('/save',async (req,res)=>{
                 //nothing
         }
         console.log(req.body.title)
-        cardId=cardIdNotExistAlready(result[0][title],req.body.cardId)
+        cardId=req.body.cardId
         description=req.body.description
         result[0][title].push({
             cardId:cardId,
