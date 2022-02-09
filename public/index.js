@@ -8,7 +8,7 @@ const cardArea=document.getElementsByClassName("card-area")
 const deleteCardBtn=document.getElementsByClassName("delete-card")
 const columnTitle=document.getElementsByClassName("column-title")
 
-let title,id,description,cardId,json,data=null
+let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
 
 const cardIdArray={
     'To Do':[],
@@ -20,17 +20,78 @@ const generateNewId=(title)=>{
     
     let array=cardIdArray[title]
     let number=0
-    console.log(array)
     for(let i in array){
-        console.log(array[i])
         if(array[i]===number){
             number+=1
-            console.log(i)
         }           
     }
-    console.log(number)
     return number   
 }
+
+for(let col=0;col<cardArea.length;col++){
+    cardArea[col].addEventListener('dragstart',e=>{
+        dragItem=e.target
+        from=columnTitle[col].innerHTML
+        index1=Array.prototype.indexOf.call(e.target.parentNode.children, e.target)
+        index1-=1
+        cardId=cardIdArray[from][index1]
+        setTimeout(()=>{
+            e.target.display="none"
+        },0)
+    })
+
+    cardArea[col].addEventListener('drag',e=>{
+        setTimeout(()=>{
+            e.target.style.display="none"
+        },0)
+    })
+
+    cardArea[col].addEventListener('dragend',e=>{
+        setTimeout(()=>{
+            e.target.style.display="block"
+        },0)
+    })
+
+    cardArea[col].addEventListener('dragover',e=>{
+        e.preventDefault()
+    })
+
+    cardArea[col].addEventListener('dragenter',e=>{
+        e.preventDefault()
+    })
+
+    cardArea[col].addEventListener('drop',async e=>{
+        if(e.target.className==="card-drop"){
+            to=columnTitle[col].innerHTML
+            newId=generateNewId(to)
+            index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.children, e.target.parentNode)
+                  
+            data={
+                id:id,
+                from:from,
+                to:to,
+                cardId:cardId,
+                index:index,
+                newId:newId
+            }
+            
+            const response=await moveData(data)
+            if(response.success==true){
+                insertAfter(dragItem,e.target.parentNode)
+                cardIdArray[from].splice(index1,1)
+                cardIdArray[to].splice(index,0,newId)
+            }
+            else if(response.success==false){
+                dragItem.style.visibility="visible"
+            }
+        }
+    })
+}
+
+function insertAfter(newNode, existingNode) {
+    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+}
+
 
 for(let box_no=0; box_no<addBtn.length; box_no++){
     addBtn[box_no].addEventListener("click",()=>{
@@ -41,13 +102,13 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
     })
 }
 
-const addDeleteCardEventListener=(box_no,description,newly)=>{
+const addDeleteCardEventListener=(box_no,description)=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
         if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
         cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',async e=>{
             let index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
             index-=1
-            title=columnTitle[box_no].innerHTML
+            title=e.target.parentNode.parentNode.parentNode.parentNode.parentNode.firstElementChild.innerHTML
             cardId=cardIdArray[title][index]
             description=e.target.parentNode.innerText.split(/\n/)[0]
             
@@ -57,12 +118,11 @@ const addDeleteCardEventListener=(box_no,description,newly)=>{
                 cardId:cardId,
                 description:description
             }
-            console.log(data)
+
             const response=await deleteData(data)
             if(response.success===true){
                 e.target.parentNode.parentNode.remove()
                 cardIdArray[title].splice(index,1)
-                console.log(cardIdArray)
             }
         })
 
@@ -80,34 +140,46 @@ const addCard=async (box_no,description,newly)=>{
     `
     if(newly){
         title=columnTitle[box_no].innerHTML
-        console.log(cardIdArray)
         cardId=generateNewId(title)
-        console.log(cardId)
         id='id'
-        console.log(description)
+
         data={
             id:id,
             title:title,
             cardId:cardId,
             description:description
         }
+
         const response=await saveData(data)
-        console.log(response)
+
         if(response.success==true){
             cardArea[box_no].innerHTML+=cardnode
             textArea[box_no].value=""
             cardIdArray[title].push(cardId)
             addDeleteCardEventListener(box_no,description,false)
         }
-        if(response.success==false){
+        else if(response.success==false){
             return
         }
     }
     else{
         cardArea[box_no].innerHTML+=cardnode
         textArea[box_no].value=""
-        addDeleteCardEventListener(box_no,description,false)
+        addDeleteCardEventListener(box_no,description)
     }  
+}
+
+const moveData= async (contents)=>{
+    const response=await fetch('/move',{
+        method:'POST',
+        headers:{
+            'Accept':'application/json',
+            'Content-Type':'application/json'
+        },
+        body:JSON.stringify(contents)
+    })
+    const result=await response.json()
+    return result
 }
 
 const deleteData= async (contents)=>{
@@ -173,7 +245,6 @@ const renderData=(json)=>{
             cardId=data[title][j].cardId
             addCard(box_no,description,false)
             cardIdArray[title].push(cardId)
-            console.log(cardIdArray)
         }
     }
 }

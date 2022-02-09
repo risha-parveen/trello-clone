@@ -40,6 +40,7 @@ app.post('/move',async (req,res)=>{
         let from=req.body.from
         let to=req.body.to
         let index=req.body.index
+        let newId=req.body.newId
 
         //delete the card from the from column
         let i=null
@@ -57,13 +58,9 @@ app.post('/move',async (req,res)=>{
         }
         description=moveresult[0][from][ind].description
         moveresult[0][from].splice(ind,1)
-        
-        cardId=cardIdNotExistAlready(moveresult[0][to],cardId)
-        console.log(cardId)
-        
 
         let moved_card={
-            cardId:cardId,
+            cardId:newId,
             description:description
         }
         //add the card to the new column
