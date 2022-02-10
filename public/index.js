@@ -74,7 +74,7 @@ for(let col=0;col<cardArea.length;col++){
                 index:index,
                 newId:newId
             }
-            
+
             const response=await moveData(data)
             if(response.success==true){
                 insertAfter(dragItem,e.target.parentNode)
