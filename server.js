@@ -84,15 +84,6 @@ app.post('/move',async (req,res)=>{
     }
 })
 
-const cardIdNotExistAlready=(array,cardId)=>{
-    for(let i in array){
-        if(array[i].cardId===cardId){
-            cardId+=1
-        }
-    }
-    return cardId
-}
-
 //delete:
 //id
 //cardId
@@ -165,7 +156,6 @@ app.post('/save',async (req,res)=>{
         return
     }
     if(result.length!==0){
-        console.log(req.body.title)
         switch(req.body.title){
             case 'To Do':
                 title='To Do'
@@ -179,7 +169,6 @@ app.post('/save',async (req,res)=>{
             default:
                 //nothing
         }
-        console.log(req.body.title)
         cardId=req.body.cardId
         description=req.body.description
         result[0][title].push({

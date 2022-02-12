@@ -11,22 +11,31 @@ const columnTitle=document.getElementsByClassName("column-title")
 //
 const loginContainer=document.getElementById('login-container')
 const boardContainer=document.getElementById('board-container')
-const submitButton=document.getElementById('submit-button')
+const signInButton=document.getElementById('sign-in-button')
+const signUpButton=document.getElementById('sign-up-button')
 const createNewAccountButton=document.getElementById('create-new-account')
 const confirmfield=document.getElementById('confirm-field')
 
 
 boardContainer.style.display="none"
 
-submitButton.addEventListener('click',()=>{
+signInButton.addEventListener('click',()=>{
     boardContainer.style.display=""
     loginContainer.style.display="none"
 })
 
+signUpButton.addEventListener('click',()=>{
+    confirmfield.style.display="none"
+    signUpButton.style.display="none"
+    signInButton.style.display=""
+    createNewAccountButton.style.display=""
+})
+
 createNewAccountButton.addEventListener('click',()=>{
     confirmfield.style.display=""
-    submitButton.innerHTML="SIGN UP"
-    createNewAccountButton.textContent=""
+    signInButton.style.display="none"
+    signUpButton.style.display=""
+    createNewAccountButton.style.display="none"
 })
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
