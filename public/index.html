@@ -8,7 +8,18 @@
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
-    <div class="container">
+    <div id="login-container">
+        <div id="login-column" >
+            <div id="login-board">
+                <input id="username-field" placeholder="username">
+                <input id="password-field" placeholder="password">
+                <input id="confirm-field" placeholder="confirm passoword" style="display:none">
+                <button id="submit-button">SIGN IN</button>
+            </div>
+            <p id="create-new-account">create new account ?</p>
+        </div>       
+    </div>
+    <div id="board-container" >
         <div class="container-column">
             <div class="container-box">
                 <div contenteditable class="column-title">To Do</div>

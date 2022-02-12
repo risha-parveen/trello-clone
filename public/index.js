@@ -8,6 +8,27 @@ const cardArea=document.getElementsByClassName("card-area")
 const deleteCardBtn=document.getElementsByClassName("delete-card")
 const columnTitle=document.getElementsByClassName("column-title")
 
+//
+const loginContainer=document.getElementById('login-container')
+const boardContainer=document.getElementById('board-container')
+const submitButton=document.getElementById('submit-button')
+const createNewAccountButton=document.getElementById('create-new-account')
+const confirmfield=document.getElementById('confirm-field')
+
+
+boardContainer.style.display="none"
+
+submitButton.addEventListener('click',()=>{
+    boardContainer.style.display=""
+    loginContainer.style.display="none"
+})
+
+createNewAccountButton.addEventListener('click',()=>{
+    confirmfield.style.display=""
+    submitButton.innerHTML="SIGN UP"
+    createNewAccountButton.textContent=""
+})
+
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
 
 const cardIdArray={
@@ -262,3 +283,5 @@ const getData=async ()=>{
 }
 
 window.onload=getData()
+
+
