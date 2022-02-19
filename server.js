@@ -3,6 +3,7 @@ const express=require('express')
 const mongoose=require('mongoose')
 const { collection } = require('./models/schema')
 const app=express()
+const bcrypt=require('bcrypt')
 
 main().catch(err=>console.log(err))
 async function main(){
@@ -10,11 +11,51 @@ async function main(){
 }
 
 const Database=require('./models/schema')
+const user_db=require('./models/user_schema')
 
 app.use(express.urlencoded({extended:false}))
 
 app.use(express.static('public'))
 app.use(express.json())
+
+app.post('/sign_up', async (req,res)=>{
+    let username=req.body.username
+    let password=req.body.password
+    if(password!==req.body.confirm) {
+        res.status(400).send({
+            success:false,
+            message:"confirmed password is incorrect"
+        })
+        return
+    }
+    try{
+        result=await user_db.find({"username":username})
+        if(result.length!==0){
+            res.status(400).send({
+                success:false, 
+                message:"username already exist"
+            })
+        }
+        else{
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            newUser={
+                "username":username,
+                "password":hashedPassword
+            }
+            let db=await user_db.insertMany(newUser)
+            if(db){
+                console.log(db)
+                res.status(200).send({
+                    success:true,
+                    message:"user registered successfully"
+                })
+            }
+        }
+    }
+    catch(err){
+        console.log(error)
+    }
+})
 
 let result,delresult,moveresult,delId,delTitle=null
 
