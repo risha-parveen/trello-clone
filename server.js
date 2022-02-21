@@ -91,6 +91,25 @@ app.post('/sign_in',async (req,res)=>{
     }
 })
 
+const auth=(req,res,next)=>{
+    const token=req.header('auth-token')
+    if(!token) return res.status(400).send({
+        success:false,
+        message:"access denied"
+    })
+    try{
+        const verified=jwt.verify(token, publicKey,{algorithms: ["RS256"]})
+        console.log(verified)
+        req.user=verified
+        next()
+    }catch(err){
+        res.status(400).send({
+            success:false,
+            message:"Invalid token"
+        })
+    }
+}
+
 let result,delresult,moveresult,delId,delTitle=null
 
 //move
@@ -100,7 +119,7 @@ let result,delresult,moveresult,delId,delTitle=null
 //from
 //to
 
-app.post('/move',async (req,res)=>{
+app.post('/move',auth,async (req,res)=>{
     try{
         moveresult=await Database.find({})
     }
@@ -165,7 +184,7 @@ app.post('/move',async (req,res)=>{
 //description
 //title
 
-app.post('/delete',async (req,res)=>{
+app.post('/delete',auth,async (req,res)=>{
     try{
         delresult=await Database.find({})
     }catch(error){
@@ -219,7 +238,7 @@ app.post('/delete',async (req,res)=>{
 //cardId
 //description
 
-app.post('/save',async (req,res)=>{
+app.post('/save',auth,async (req,res)=>{
     try{
         result=await Database.find({id:req.body.id}) 
     }
@@ -311,7 +330,7 @@ app.post('/save',async (req,res)=>{
     }
 })
 
-app.get('/get_data',async (req,res)=>{
+app.get('/get_data',auth,async (res)=>{
     try{
         result=await Database.find({})
         res.json(result)
