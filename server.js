@@ -5,12 +5,9 @@ const { collection } = require('./models/schema')
 const app=express()
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
-require('dotenv').config()
+const fs=require('fs')
 
-main().catch(err=>console.log(err))
-async function main(){
-    await mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
-}
+mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
 
 const Database=require('./models/schema')
 const user_db=require('./models/user_schema')
@@ -19,6 +16,9 @@ app.use(express.urlencoded({extended:false}))
 
 app.use(express.static('public'))
 app.use(express.json())
+
+const privateKey=fs.readFileSync('./privateKey.txt')
+const publicKey=fs.readFileSync('./publicKey.txt')
 
 app.post('/sign_up', async (req,res)=>{
     let username=req.body.username
@@ -37,79 +37,59 @@ app.post('/sign_up', async (req,res)=>{
                 success:false, 
                 message:"username already exist"
             })
-            return
         }
-        const hashedPassword = bcrypt.hash(password, 10);
-        newUser={
-            "username":username,
-            "password":hashedPassword
-        }
-        try{
-            let user=await user_db.insertMany(newUser)
-            if(user){
-                console.log(user)
-                res.status(200).send({
-                    success:true,
-                    user_id:user[0]._id,
-                    message:"user registered successfully"
-                })
+        else{
+            const hashedPassword = bcrypt.hashSync(password, 10);
+            newUser={
+                "username":username,
+                "password":hashedPassword
             }
-        }catch(err){
-            console.log(err)
-        }                  
+            try{
+                let user=await user_db.insertMany(newUser)
+                if(user){
+                    console.log(user)
+                    res.status(200).send({
+                        success:true,
+                        user_id:user[0]._id,
+                        message:"user registered successfully"
+                    })
+                }
+            }catch(err){
+                console.log(err)
+            }     
+        }
     }
     catch(err){
         console.log(error)
     }
 })
 
-/*app.post('/sign_in', async (req,res)=>{
+app.post('/sign_in',async (req,res)=>{
     try{
         user=await user_db.find({"username":req.body.username})
-        if(user.length===0){
-            res.status(400).send({
-                success:false, 
+        if(user.length===0)
+            return res.status(400).send({
+                success:false,
                 message:"username doesnt exist"
             })
-            return
-        }
-        const validPass=await bcrypt.compare(req.body.password,user[0].password)
+        const validPass=bcrypt.compare(req.body.password, user[0].password)
         if(!validPass)
             return res.status(400).send({
                 success:false,
                 message:"Incorrect password"
             })
-        const token=jwt.sign({_id:user[0]._id},process.env.ACCESS_TOKEN)
-        res.header('auth-token', token).status(200).send({
+        const payload={user_id:user[0]._id}
+        const token=jwt.sign(payload,privateKey,{expiresIn:"12h",algorithm: "RS256"})
+        console.log(token)
+        res.header('auth-token',token).status(200).send({
             success:true,
-            message:"logged in successfully"
-        })
-    }catch(err){
-        console.log(err) 
-    }
-})*/
-
-//middleware for authentication
-
-/*const auth=(req,res,next)=>{
-    const token=req.header('auth-token')
-    if(!token) return res.status(400).send({
-        success:false,
-        message:"access denied"
-    })
-
-    try{
-        const verified=jwt.verify(token, process.env.ACCESS_TOKEN)
-        console.log(verified)
-        req.user=verified
-        next()
-    }catch(err){
-        res.status(400).send({
-            success:false,
-            message:"Invalid token"
+            message:"logged in"
         })
     }
-}*/
+    catch(err){
+        console.log(err)
+    }
+})
 
 let result,delresult,moveresult,delId,delTitle=null
 
