@@ -11,6 +11,7 @@ mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
 
 const Database=require('./models/schema')
 const user_db=require('./models/user_schema')
+const req = require('express/lib/request')
 
 app.use(express.urlencoded({extended:false}))
 
@@ -99,8 +100,8 @@ const auth=(req,res,next)=>{
     })
     try{
         const verified=jwt.verify(token, publicKey,{algorithms: ["RS256"]})
-        console.log(verified)
         req.user=verified
+        console.log(verified)
         next()
     }catch(err){
         res.status(400).send({
@@ -120,8 +121,9 @@ let result,delresult,moveresult,delId,delTitle=null
 //to
 
 app.post('/move',auth,async (req,res)=>{
+    const user_id=req.user.user_id
     try{
-        moveresult=await Database.find({})
+        moveresult=await Database.find({_id:user_id})
     }
     catch(error){
         res.status(500).send({
@@ -162,7 +164,7 @@ app.post('/move',auth,async (req,res)=>{
         moveresult[0][to].splice(index,0,moved_card)
 
         try{
-            await Database.replaceOne({id:'id'},moveresult[0],{upsert:true})           
+            await Database.replaceOne({_id:user_id},moveresult[0],{upsert:true})           
             res.status(200).send({
                 action:"moved the card",
                 success:true
@@ -185,8 +187,9 @@ app.post('/move',auth,async (req,res)=>{
 //title
 
 app.post('/delete',auth,async (req,res)=>{
+    const user_id=req.user.user_id
     try{
-        delresult=await Database.find({})
+        delresult=await Database.find({_id:user_id})
     }catch(error){
         res.status(500).send({
             action:"empty",
@@ -194,10 +197,10 @@ app.post('/delete',auth,async (req,res)=>{
         })
     }
     if(delresult.length!==0){
+        console.log(req.header)
         delId=req.body.cardId
         delTitle=req.body.title
         delDesc=req.body.description
-        let i=null
         let array=delresult[0][delTitle]
         let ind=array.findIndex(i=>{
             return (i.cardId===delId && i.description===delDesc)
@@ -215,7 +218,7 @@ app.post('/delete',auth,async (req,res)=>{
         delresult[0][delTitle].splice(ind,1)
         
         try{
-            await Database.replaceOne({id:'id'},delresult[0],{upsert:true})
+            await Database.replaceOne({_id:user_id},delresult[0],{upsert:true})
             
             res.status(200).send({
                 action:"deleted",
@@ -239,8 +242,9 @@ app.post('/delete',auth,async (req,res)=>{
 //description
 
 app.post('/save',auth,async (req,res)=>{
+    const user_id=req.user.user_id
     try{
-        result=await Database.find({id:req.body.id}) 
+        result=await Database.find({_id:req.user.user_id}) 
     }
     catch(error){
         res.status(500).send({
@@ -270,7 +274,7 @@ app.post('/save',auth,async (req,res)=>{
             description:description
         })
         try{
-            await Database.replaceOne({id:'id'},result[0],{upsert:true})
+            await Database.replaceOne({_id:user_id},result[0],{upsert:true})
             
             res.status(200).send({
                 action:"updated",
@@ -287,7 +291,7 @@ app.post('/save',auth,async (req,res)=>{
     }
     else{
         let new_data={
-            id:req.body.id,
+            _id:user_id,
             'To Do':[],
             'Doing':[],
             'Done':[]
@@ -330,9 +334,9 @@ app.post('/save',auth,async (req,res)=>{
     }
 })
 
-app.get('/get_data',auth,async (res)=>{
+app.get('/get_data',auth,async (req,res)=>{
     try{
-        result=await Database.find({})
+        result=await Database.find({_id:req.user.user_id})
         res.json(result)
     }
     catch(error){

@@ -293,4 +293,3 @@ const getData=async ()=>{
 
 window.onload=getData()
 
-
