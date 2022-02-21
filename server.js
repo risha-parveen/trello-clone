@@ -4,6 +4,8 @@ const mongoose=require('mongoose')
 const { collection } = require('./models/schema')
 const app=express()
 const bcrypt=require('bcrypt')
+const jwt=require('jsonwebtoken')
+require('dotenv').config()
 
 main().catch(err=>console.log(err))
 async function main(){
@@ -35,27 +37,79 @@ app.post('/sign_up', async (req,res)=>{
                 success:false, 
                 message:"username already exist"
             })
+            return
         }
-        else{
-            const hashedPassword = bcrypt.hashSync(password, 10);
-            newUser={
-                "username":username,
-                "password":hashedPassword
-            }
-            let db=await user_db.insertMany(newUser)
-            if(db){
-                console.log(db)
+        const hashedPassword = bcrypt.hash(password, 10);
+        newUser={
+            "username":username,
+            "password":hashedPassword
+        }
+        try{
+            let user=await user_db.insertMany(newUser)
+            if(user){
+                console.log(user)
                 res.status(200).send({
                     success:true,
+                    user_id:user[0]._id,
                     message:"user registered successfully"
                 })
             }
-        }
+        }catch(err){
+            console.log(err)
+        }                  
     }
     catch(err){
         console.log(error)
     }
 })
+
+/*app.post('/sign_in', async (req,res)=>{
+    try{
+        user=await user_db.find({"username":req.body.username})
+        if(user.length===0){
+            res.status(400).send({
+                success:false, 
+                message:"username doesnt exist"
+            })
+            return
+        }
+        const validPass=await bcrypt.compare(req.body.password,user[0].password)
+        if(!validPass)
+            return res.status(400).send({
+                success:false,
+                message:"Incorrect password"
+            })
+        const token=jwt.sign({_id:user[0]._id},process.env.ACCESS_TOKEN)
+        res.header('auth-token', token).status(200).send({
+            success:true,
+            message:"logged in successfully"
+        })
+    }catch(err){
+        console.log(err) 
+    }
+})*/
+
+//middleware for authentication
+
+/*const auth=(req,res,next)=>{
+    const token=req.header('auth-token')
+    if(!token) return res.status(400).send({
+        success:false,
+        message:"access denied"
+    })
+
+    try{
+        const verified=jwt.verify(token, process.env.ACCESS_TOKEN)
+        console.log(verified)
+        req.user=verified
+        next()
+    }catch(err){
+        res.status(400).send({
+            success:false,
+            message:"Invalid token"
+        })
+    }
+}*/
 
 let result,delresult,moveresult,delId,delTitle=null
 
