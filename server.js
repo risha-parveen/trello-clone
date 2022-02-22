@@ -52,6 +52,7 @@ app.post('/sign_up', async (req,res)=>{
                     res.status(200).send({
                         success:true,
                         user_id:user[0]._id,
+                        username:username,
                         message:"user registered successfully"
                     })
                 }
@@ -79,7 +80,10 @@ app.post('/sign_in',async (req,res)=>{
                 success:false,
                 message:"Incorrect password"
             })
-        const payload={user_id:user[0]._id}
+        const payload={
+            user_id:user[0]._id,
+            username:req.body.username
+        }
         const token=jwt.sign(payload,privateKey,{expiresIn:"12h",algorithm: "RS256"})
         console.log(token)
         res.header('auth-token',token).status(200).send({
@@ -243,6 +247,7 @@ app.post('/delete',auth,async (req,res)=>{
 
 app.post('/save',auth,async (req,res)=>{
     const user_id=req.user.user_id
+    const username=req.user.username
     try{
         result=await Database.find({_id:req.user.user_id}) 
     }
@@ -292,6 +297,7 @@ app.post('/save',auth,async (req,res)=>{
     else{
         let new_data={
             _id:user_id,
+            username:username,
             'To Do':[],
             'Doing':[],
             'Done':[]
