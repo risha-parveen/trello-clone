@@ -15,7 +15,8 @@ const signInButton=document.getElementById('sign-in-button')
 const signUpButton=document.getElementById('sign-up-button')
 const createNewAccountButton=document.getElementById('create-new-account')
 const confirmfield=document.getElementById('confirm-field')
-
+const usernamefield=document.getElementById('username-field')
+const passwordfield=document.getElementById('password-field')
 
 boardContainer.style.display="none"
 
@@ -25,6 +26,7 @@ signInButton.addEventListener('click',()=>{
 })
 
 signUpButton.addEventListener('click',()=>{
+    
     confirmfield.style.display="none"
     signUpButton.style.display="none"
     signInButton.style.display=""
@@ -39,6 +41,8 @@ createNewAccountButton.addEventListener('click',()=>{
 })
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
+
+let token=null
 
 const cardIdArray={
     'To Do':[],
@@ -97,15 +101,14 @@ for(let col=0;col<cardArea.length;col++){
             index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.children, e.target.parentNode)
                   
             data={
-                id:id,
                 from:from,
                 to:to,
                 cardId:cardId,
                 index:index,
                 newId:newId
             }
-
-            const response=await moveData(data)
+            
+            const response=await moveData(data,token)
             if(response.success==true){
                 insertAfter(dragItem,e.target.parentNode)
                 cardIdArray[from].splice(index1,1)
@@ -143,13 +146,12 @@ const addDeleteCardEventListener=(box_no,description)=>{
             description=e.target.parentNode.innerText.split(/\n/)[0]
             
             data={
-                id:'id',
                 title:title,
                 cardId:cardId,
                 description:description
             }
 
-            const response=await deleteData(data)
+            const response=await deleteData(data,token)
             if(response.success===true){
                 e.target.parentNode.parentNode.remove()
                 cardIdArray[title].splice(index,1)
@@ -159,7 +161,7 @@ const addDeleteCardEventListener=(box_no,description)=>{
         
     }
 }
-
+console.log(token)
 const addCard=async (box_no,description,newly)=>{
     const cardnode=`
         <div class="card-combo" draggable="true">
@@ -171,16 +173,15 @@ const addCard=async (box_no,description,newly)=>{
     if(newly){
         title=columnTitle[box_no].innerHTML
         cardId=generateNewId(title)
-        id='id'
+        
 
         data={
-            id:id,
             title:title,
             cardId:cardId,
             description:description
         }
 
-        const response=await saveData(data)
+        const response=await saveData(data,token)
 
         if(response.success==true){
             cardArea[box_no].innerHTML+=cardnode
@@ -199,12 +200,13 @@ const addCard=async (box_no,description,newly)=>{
     }  
 }
 
-const moveData= async (contents)=>{
+const moveData= async (contents,token)=>{
     const response=await fetch('/move',{
         method:'POST',
         headers:{
             'Accept':'application/json',
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+token
         },
         body:JSON.stringify(contents)
     })
@@ -212,13 +214,14 @@ const moveData= async (contents)=>{
     return result
 }
 
-const deleteData= async (contents)=>{
+const deleteData= async (contents,token)=>{
     try{
         const response=await fetch('/delete',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
-                'Content-Type':'application/json'
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+token
             },
             body:JSON.stringify(contents)
         })
@@ -230,13 +233,14 @@ const deleteData= async (contents)=>{
     }
 }
 
-const saveData= async (contents)=>{
+const saveData= async (contents,token)=>{
     try{
        const response=await fetch('/save',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
-                'Content-Type':'application/json'
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+token
             },
             body:JSON.stringify(contents)
         })
@@ -252,9 +256,6 @@ const renderData=(json)=>{
     let data=json[0]
     for(let i in data){
         switch(i){
-            case "id":
-                id="id"
-                break
             case "To Do":
                 title="To Do"
                 box_no=0
@@ -279,11 +280,17 @@ const renderData=(json)=>{
     }
 }
 
-const getData=async ()=>{
+const getData=async (token)=>{
     try{
-        const response=await fetch('/get_data')
+        const response=await fetch('/get_data',{
+            method:'GET',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json',
+                'Authorization':'Bearer '+token
+            }
+        })
         json=await response.json()
-
         renderData(json)
     }catch(e){
         console.log(e)
@@ -291,5 +298,53 @@ const getData=async ()=>{
     
 }
 
-window.onload=getData()
+//window.onload=getData()
 
+const checkLocalStorage=()=>{
+    token=localStorage.getItem("token")
+    console.log(token)
+    if(!token){
+        signInButton.addEventListener('click',async ()=>{
+            const data={
+                "username":usernamefield.value.trim(),
+                "password":passwordfield.value.trim()
+            }
+            console.log(data)
+            try{
+                const signInResponse=await signIn(data)
+                if(signInResponse.success===true){
+                    await getData(signInResponse.token)
+                    token=signInResponse.token
+                    boardContainer.style.display=""
+                    loginContainer.style.display="none"                   
+                }
+                else{
+                    //Make the outline of username and password field red
+                    //Show label->invalid username or password
+                }
+            }catch(err){
+                console.log(err)
+            }           
+        })
+    }
+}
+
+const signIn=async(contents)=>{
+    try{
+        const response=await fetch('/sign_in',{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify(contents)
+        })
+        const result=await response.json()
+        return result
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+
+window.onload=checkLocalStorage()

@@ -24,13 +24,6 @@ const publicKey=fs.readFileSync('./publicKey.txt')
 app.post('/sign_up', async (req,res)=>{
     let username=req.body.username
     let password=req.body.password
-    if(password!==req.body.confirm) {
-        res.status(400).send({
-            success:false,
-            message:"confirmed password is incorrect"
-        })
-        return
-    }
     try{
         result=await user_db.find({"username":username})
         if(result.length!==0){
@@ -85,10 +78,12 @@ app.post('/sign_in',async (req,res)=>{
             username:req.body.username
         }
         const token=jwt.sign(payload,privateKey,{expiresIn:"12h",algorithm: "RS256"})
+        
         console.log(token)
-        res.header('auth-token',token).status(200).send({
+        res.status(200).send({
             success:true,
-            message:"logged in"
+            message:"logged in",
+            token:token
         })
     }
     catch(err){
@@ -97,7 +92,8 @@ app.post('/sign_in',async (req,res)=>{
 })
 
 const auth=(req,res,next)=>{
-    const token=req.header('auth-token')
+    const authHeader=req.header('Authorization')
+    const token=authHeader && authHeader.split(' ')[1]
     if(!token) return res.status(400).send({
         success:false,
         message:"access denied"
@@ -248,6 +244,7 @@ app.post('/delete',auth,async (req,res)=>{
 app.post('/save',auth,async (req,res)=>{
     const user_id=req.user.user_id
     const username=req.user.username
+    console.log(user_id)
     try{
         result=await Database.find({_id:req.user.user_id}) 
     }
@@ -341,6 +338,7 @@ app.post('/save',auth,async (req,res)=>{
 })
 
 app.get('/get_data',auth,async (req,res)=>{
+    console.log(req.user.user_id)
     try{
         result=await Database.find({_id:req.user.user_id})
         res.json(result)
