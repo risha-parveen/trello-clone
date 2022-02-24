@@ -17,6 +17,9 @@ const createNewAccountButton=document.getElementById('create-new-account')
 const confirmfield=document.getElementById('confirm-field')
 const usernamefield=document.getElementById('username-field')
 const passwordfield=document.getElementById('password-field')
+const messagelabel=document.getElementById('message-label')
+const back=document.getElementById('back')
+
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
 
@@ -279,6 +282,7 @@ const getData=async (token)=>{
 }
 
 signInButton.addEventListener('click',async ()=>{
+    messagelabel.innerHTML=""
     const username=usernamefield.value.trim()
     const password=passwordfield.value.trim()
     const data={
@@ -287,8 +291,11 @@ signInButton.addEventListener('click',async ()=>{
     }
     try{
         if(username.length===0 || password.length===0){
-            if(username.length===0 ) usernamefield.style.boxShadow="2px 2px 5px red"
-            if(password.length===0 ) passwordfield.style.boxShadow="2px 2px 5px red"
+            messagelabel.innerHTML="Fields cannot be empty"
+            setTimeout(() => {
+                messagelabel.innerHTML=" "
+            }, 3000);
+            
             return
         }
 
@@ -302,8 +309,11 @@ signInButton.addEventListener('click',async ()=>{
             loginContainer.style.display="none"                   
         }
         else{
-            usernamefield.style.boxShadow="2px 2px 5px red"
-            passwordfield.style.boxShadow="2px 2px 5px red"
+            messagelabel.innerHTML=signInResponse.message
+            setTimeout(() => {
+                messagelabel.innerHTML=" "
+            }, 3000);
+            return
         }
     }catch(err){
         console.log(err)
@@ -312,14 +322,29 @@ signInButton.addEventListener('click',async ()=>{
 
 
 createNewAccountButton.addEventListener('click',()=>{
+    messagelabel.innerHTML=""
     confirmfield.style.display=""
+    usernamefield.value=""
+    passwordfield.value=""
     signInButton.style.display="none"
     signUpButton.style.display=""
     createNewAccountButton.style.display="none"
+    back.innerHTML="go to login"
 })
 
+back.addEventListener('click',()=>{
+    back.innerHTML=""
+    usernamefield.value=""
+    passwordfield.value=""
+    confirmfield.value=""
+    confirmfield.style.display="none"
+    signUpButton.style.display="none"
+    signInButton.style.display=""
+    createNewAccountButton.style.display=""
+})
 
 signUpButton.addEventListener('click',async ()=>{
+    messagelabel.innerHTML=""
     const username=usernamefield.value.trim()
     const password=passwordfield.value.trim()
     const confirm=confirmfield.value.trim()
@@ -328,29 +353,43 @@ signUpButton.addEventListener('click',async ()=>{
         "password":password
     }
     try{
-        if([username,password,confirm].some(x=>x.length===0) || password!==confirm){
-            console.log("hi")
+        if([username,password,confirm].some(x=>x.length===0) ){
+            messagelabel.innerHTML="Fields cannot be empty"
+            setTimeout(() => {
+                messagelabel.innerHTML=" "
+            }, 3000);
+            return
+        }
+        if(confirm!==password){
+            messagelabel.innerHTML="Confirm password"
+            setTimeout(() => {
+                messagelabel.innerHTML=" "
+            }, 3000);
             return
         }
         const signUpResponse=await signUp(data)
         if(signUpResponse.success===true){
-            usernamefield.innerHTML=""
-            passwordfield.innerHTML=""
+            usernamefield.value=""
+            passwordfield.value=""
+            confirmfield.value=""
             confirmfield.style.display="none"
             signUpButton.style.display="none"
             signInButton.style.display=""
-            createNewAccountButton.style.display=""   
+            createNewAccountButton.style.display="" 
+            back.innerHTML=""  
         }
         else{
-            console.log("hello")
+            messagelabel.innerHTML=signUpResponse.message
+            setTimeout(() => {
+                messagelabel.innerHTML=" "
+            }, 3000);
+            return
         }
     }catch(err){
         console.log(err)
     }                
 })
 
-
-//window.onload=getData()
 
 const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
