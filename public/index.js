@@ -18,28 +18,6 @@ const confirmfield=document.getElementById('confirm-field')
 const usernamefield=document.getElementById('username-field')
 const passwordfield=document.getElementById('password-field')
 
-boardContainer.style.display="none"
-
-signInButton.addEventListener('click',()=>{
-    boardContainer.style.display=""
-    loginContainer.style.display="none"
-})
-
-signUpButton.addEventListener('click',()=>{
-    
-    confirmfield.style.display="none"
-    signUpButton.style.display="none"
-    signInButton.style.display=""
-    createNewAccountButton.style.display=""
-})
-
-createNewAccountButton.addEventListener('click',()=>{
-    confirmfield.style.display=""
-    signInButton.style.display="none"
-    signUpButton.style.display=""
-    createNewAccountButton.style.display="none"
-})
-
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
 
 let token=null
@@ -281,6 +259,7 @@ const renderData=(json)=>{
 }
 
 const getData=async (token)=>{
+    
     try{
         const response=await fetch('/get_data',{
             method:'GET',
@@ -292,40 +271,121 @@ const getData=async (token)=>{
         })
         json=await response.json()
         renderData(json)
+        return json
     }catch(e){
         console.log(e)
     }
     
 }
 
+signInButton.addEventListener('click',async ()=>{
+    const username=usernamefield.value.trim()
+    const password=passwordfield.value.trim()
+    const data={
+        "username":username,
+        "password":password
+    }
+    try{
+        if(username.length===0 || password.length===0){
+            if(username.length===0 ) usernamefield.style.boxShadow="2px 2px 5px red"
+            if(password.length===0 ) passwordfield.style.boxShadow="2px 2px 5px red"
+            return
+        }
+
+        const signInResponse=await signIn(data)
+
+        if(signInResponse.success===true){
+            await getData(signInResponse.token)
+            token=signInResponse.token
+            localStorage.setItem("token",token)
+            boardContainer.style.display=""
+            loginContainer.style.display="none"                   
+        }
+        else{
+            usernamefield.style.boxShadow="2px 2px 5px red"
+            passwordfield.style.boxShadow="2px 2px 5px red"
+        }
+    }catch(err){
+        console.log(err)
+    }           
+})
+
+
+createNewAccountButton.addEventListener('click',()=>{
+    confirmfield.style.display=""
+    signInButton.style.display="none"
+    signUpButton.style.display=""
+    createNewAccountButton.style.display="none"
+})
+
+
+signUpButton.addEventListener('click',async ()=>{
+    const username=usernamefield.value.trim()
+    const password=passwordfield.value.trim()
+    const confirm=confirmfield.value.trim()
+    const data={
+        "username":username,
+        "password":password
+    }
+    try{
+        if([username,password,confirm].some(x=>x.length===0) || password!==confirm){
+            console.log("hi")
+            return
+        }
+        const signUpResponse=await signUp(data)
+        if(signUpResponse.success===true){
+            usernamefield.innerHTML=""
+            passwordfield.innerHTML=""
+            confirmfield.style.display="none"
+            signUpButton.style.display="none"
+            signInButton.style.display=""
+            createNewAccountButton.style.display=""   
+        }
+        else{
+            console.log("hello")
+        }
+    }catch(err){
+        console.log(err)
+    }                
+})
+
+
 //window.onload=getData()
 
-const checkLocalStorage=()=>{
+const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
     console.log(token)
+    
     if(!token){
-        signInButton.addEventListener('click',async ()=>{
-            const data={
-                "username":usernamefield.value.trim(),
-                "password":passwordfield.value.trim()
-            }
-            console.log(data)
-            try{
-                const signInResponse=await signIn(data)
-                if(signInResponse.success===true){
-                    await getData(signInResponse.token)
-                    token=signInResponse.token
-                    boardContainer.style.display=""
-                    loginContainer.style.display="none"                   
-                }
-                else{
-                    //Make the outline of username and password field red
-                    //Show label->invalid username or password
-                }
-            }catch(err){
-                console.log(err)
-            }           
+        boardContainer.style.display="none"
+    }
+    if(token){
+        const result=await getData(token)
+        if(result.success===false){
+            boardContainer.style.display="none"
+            loginContainer.style.display=""
+            return
+        }
+        boardContainer.style.display=""
+        loginContainer.style.display="none"
+    }
+}
+
+const signUp=async (contents)=>{
+    try{
+        const response=await fetch('/sign_up',{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify(contents)
         })
+        const result=await response.json()
+        return result
+    }
+    catch(err){
+        console.log(err)
     }
 }
 

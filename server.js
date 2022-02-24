@@ -67,7 +67,8 @@ app.post('/sign_in',async (req,res)=>{
                 success:false,
                 message:"username doesnt exist"
             })
-        const validPass=bcrypt.compare(req.body.password, user[0].password)
+        const validPass=bcrypt.compareSync(req.body.password, user[0].password)
+        console.log(validPass)
         if(!validPass)
             return res.status(400).send({
                 success:false,
@@ -94,7 +95,7 @@ app.post('/sign_in',async (req,res)=>{
 const auth=(req,res,next)=>{
     const authHeader=req.header('Authorization')
     const token=authHeader && authHeader.split(' ')[1]
-    if(!token) return res.status(400).send({
+    if(!token) return res.send({
         success:false,
         message:"access denied"
     })
@@ -104,7 +105,7 @@ const auth=(req,res,next)=>{
         console.log(verified)
         next()
     }catch(err){
-        res.status(400).send({
+        res.send({
             success:false,
             message:"Invalid token"
         })
