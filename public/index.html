@@ -22,49 +22,52 @@
             <p id="back"></p>
         </div>       
     </div>
-    <div id="board-container" >
-        <div class="container-column">
-            <div class="container-box">
-                <div contenteditable class="column-title">To Do</div>
-                <div class="items">
-                    <div class="card-area">
-                        <div class="card-combo" style="height:20px" draggable="true">
-                            <div class="card-drop"></div>
+    <div id="main-board-container">
+        <button id="logout">Log out</button>
+        <div id="board-container" >
+            <div class="container-column">
+                <div class="container-box">
+                    <div class="column-title">To Do</div>
+                    <div class="items">
+                        <div class="card-area">
+                            <div class="card-combo" style="height:20px" draggable="true">
+                                <div class="card-drop"></div>
+                            </div>
                         </div>
+                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
+                        <button class="add-item">Add Card</button>
                     </div>
-                    <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                    <button class="add-item">Add Card</button>
                 </div>
-            </div>
-        </div> 
-        <div class="container-column">
-            <div class="container-box">
-                <div contenteditable class="column-title" >Doing</div>
-                <div class="items">
-                    <div class="card-area">
-                        <div class="card-combo" style="height:20px" draggable="true">
-                            <div class="card-drop"></div>
+            </div> 
+            <div class="container-column">
+                <div class="container-box">
+                    <div contenteditable class="column-title" >Doing</div>
+                    <div class="items">
+                        <div class="card-area">
+                            <div class="card-combo" style="height:20px" draggable="true">
+                                <div class="card-drop"></div>
+                            </div>
                         </div>
+                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
+                        <button class="add-item">Add Card</button>
                     </div>
-                    <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                    <button class="add-item">Add Card</button>
                 </div>
-            </div>
-        </div> 
-        <div class="container-column">
-            <div class="container-box">
-                <div contenteditable class="column-title">Done</div>
-                <div class="items">
-                    <div class="card-area">
-                        <div class="card-combo" style="height:20px" draggable="true">
-                            <div class="card-drop"></div>
+            </div> 
+            <div class="container-column">
+                <div class="container-box">
+                    <div contenteditable class="column-title">Done</div>
+                    <div class="items">
+                        <div class="card-area">
+                            <div class="card-combo" style="height:20px" draggable="true">
+                                <div class="card-drop"></div>
+                            </div>
                         </div>
+                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
+                        <button class="add-item">Add Card</button>
                     </div>
-                    <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                    <button class="add-item">Add Card</button>
                 </div>
-            </div>
-        </div> 
+            </div> 
+        </div>
     </div>
     <script src="index.js"></script>
 </body>
