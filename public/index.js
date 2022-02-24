@@ -19,6 +19,7 @@ const usernamefield=document.getElementById('username-field')
 const passwordfield=document.getElementById('password-field')
 const messagelabel=document.getElementById('message-label')
 const back=document.getElementById('back')
+const logout=document.getElementById('logout')
 
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
@@ -142,7 +143,7 @@ const addDeleteCardEventListener=(box_no,description)=>{
         
     }
 }
-console.log(token)
+
 const addCard=async (box_no,description,newly)=>{
     const cardnode=`
         <div class="card-combo" draggable="true">
@@ -281,6 +282,26 @@ const getData=async (token)=>{
     
 }
 
+const refreshFields=()=>{
+    usernamefield.value=""
+    passwordfield.value=""
+    confirmfield.value=""
+}
+
+const showMessage=(message)=>{
+    messagelabel.innerHTML=message
+    setTimeout(() => {
+        messagelabel.innerHTML=" "
+    }, 3000);
+}
+
+logout.addEventListener('click',()=>{
+    localStorage.clear()
+    refreshFields()
+    boardContainer.style.display="none"
+    loginContainer.style.display=""
+})
+
 signInButton.addEventListener('click',async ()=>{
     messagelabel.innerHTML=""
     const username=usernamefield.value.trim()
@@ -290,12 +311,8 @@ signInButton.addEventListener('click',async ()=>{
         "password":password
     }
     try{
-        if(username.length===0 || password.length===0){
-            messagelabel.innerHTML="Fields cannot be empty"
-            setTimeout(() => {
-                messagelabel.innerHTML=" "
-            }, 3000);
-            
+        if(username.length===0 || password.length===0){           
+            showMessage("fields cannot be empty")
             return
         }
 
@@ -309,10 +326,7 @@ signInButton.addEventListener('click',async ()=>{
             loginContainer.style.display="none"                   
         }
         else{
-            messagelabel.innerHTML=signInResponse.message
-            setTimeout(() => {
-                messagelabel.innerHTML=" "
-            }, 3000);
+            showMessage(signInResponse.message)
             return
         }
     }catch(err){
@@ -322,10 +336,9 @@ signInButton.addEventListener('click',async ()=>{
 
 
 createNewAccountButton.addEventListener('click',()=>{
+    refreshFields()
     messagelabel.innerHTML=""
     confirmfield.style.display=""
-    usernamefield.value=""
-    passwordfield.value=""
     signInButton.style.display="none"
     signUpButton.style.display=""
     createNewAccountButton.style.display="none"
@@ -333,10 +346,8 @@ createNewAccountButton.addEventListener('click',()=>{
 })
 
 back.addEventListener('click',()=>{
+    refreshFields()
     back.innerHTML=""
-    usernamefield.value=""
-    passwordfield.value=""
-    confirmfield.value=""
     confirmfield.style.display="none"
     signUpButton.style.display="none"
     signInButton.style.display=""
@@ -354,24 +365,16 @@ signUpButton.addEventListener('click',async ()=>{
     }
     try{
         if([username,password,confirm].some(x=>x.length===0) ){
-            messagelabel.innerHTML="Fields cannot be empty"
-            setTimeout(() => {
-                messagelabel.innerHTML=" "
-            }, 3000);
+            showMessage("Fields cannot be empty") 
             return
         }
         if(confirm!==password){
-            messagelabel.innerHTML="Confirm password"
-            setTimeout(() => {
-                messagelabel.innerHTML=" "
-            }, 3000);
+            showMessage( "Confirm password")
             return
         }
         const signUpResponse=await signUp(data)
         if(signUpResponse.success===true){
-            usernamefield.value=""
-            passwordfield.value=""
-            confirmfield.value=""
+            refreshFields()
             confirmfield.style.display="none"
             signUpButton.style.display="none"
             signInButton.style.display=""
@@ -379,10 +382,7 @@ signUpButton.addEventListener('click',async ()=>{
             back.innerHTML=""  
         }
         else{
-            messagelabel.innerHTML=signUpResponse.message
-            setTimeout(() => {
-                messagelabel.innerHTML=" "
-            }, 3000);
+            showMessage(signUpResponse.message)
             return
         }
     }catch(err){
@@ -393,8 +393,6 @@ signUpButton.addEventListener('click',async ()=>{
 
 const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
-    console.log(token)
-    
     if(!token){
         boardContainer.style.display="none"
     }
