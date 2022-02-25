@@ -10,7 +10,7 @@ const columnTitle=document.getElementsByClassName("column-title")
 
 //
 const loginContainer=document.getElementById('login-container')
-const boardContainer=document.getElementById('board-container')
+const mainboardContainer=document.getElementById('main-board-container')
 const signInButton=document.getElementById('sign-in-button')
 const signUpButton=document.getElementById('sign-up-button')
 const createNewAccountButton=document.getElementById('create-new-account')
@@ -44,8 +44,11 @@ const generateNewId=(title)=>{
     return number   
 }
 
+
+
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
+        console.log(e.target)
         dragItem=e.target
         from=columnTitle[col].innerHTML
         index1=Array.prototype.indexOf.call(e.target.parentNode.children, e.target)
@@ -63,6 +66,7 @@ for(let col=0;col<cardArea.length;col++){
     })
 
     cardArea[col].addEventListener('dragend',e=>{
+        e.target.style.backgroundColor=""
         setTimeout(()=>{
             e.target.style.display="block"
         },0)
@@ -143,6 +147,19 @@ const addDeleteCardEventListener=(box_no,description)=>{
         
     }
 }
+
+/*<div id="drag-with-colour" class="dragdemo" draggable="true">drag me</div>
+<script>
+document.getElementById("drag-with-colour").addEventListener("dragstart", function(e) {
+    this.style.backgroundColor = "red";
+    e.dataTransfer.setDragImage(img, 0, 0);
+}, false);
+document.getElementById("drag-with-colour").addEventListener("dragend", function(e) {
+    this.style.backgroundColor = "green";
+}, false);
+</script>*/
+
+
 
 const addCard=async (box_no,description,newly)=>{
     const cardnode=`
@@ -298,7 +315,7 @@ const showMessage=(message)=>{
 logout.addEventListener('click',()=>{
     localStorage.clear()
     refreshFields()
-    boardContainer.style.display="none"
+    mainboardContainer.style.display="none"
     loginContainer.style.display=""
 })
 
@@ -322,7 +339,7 @@ signInButton.addEventListener('click',async ()=>{
             await getData(signInResponse.token)
             token=signInResponse.token
             localStorage.setItem("token",token)
-            boardContainer.style.display=""
+            mainboardContainer.style.display=""
             loginContainer.style.display="none"                   
         }
         else{
@@ -394,16 +411,16 @@ signUpButton.addEventListener('click',async ()=>{
 const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
     if(!token){
-        boardContainer.style.display="none"
+        mainboardContainer.style.display="none"
     }
     if(token){
         const result=await getData(token)
         if(result.success===false){
-            boardContainer.style.display="none"
+            mainboardContainer.style.display="none"
             loginContainer.style.display=""
             return
         }
-        boardContainer.style.display=""
+        mainboardContainer.style.display=""
         loginContainer.style.display="none"
     }
 }
