@@ -41,6 +41,7 @@ app.post('/sign_up', async (req,res)=>{
             try{
                 let user=await user_db.insertMany(newUser)
                 if(user){
+                    console.log(user)
                     res.status(200).send({
                         success:true,
                         user_id:user[0]._id,
@@ -67,7 +68,7 @@ app.post('/sign_in',async (req,res)=>{
                 message:"username doesnt exist"
             })
         const validPass=bcrypt.compareSync(req.body.password, user[0].password)
-        
+        console.log(validPass)
         if(!validPass)
             return res.status(400).send({
                 success:false,
@@ -79,6 +80,7 @@ app.post('/sign_in',async (req,res)=>{
         }
         const token=jwt.sign(payload,privateKey,{expiresIn:"12h",algorithm: "RS256"})
         
+        console.log(token)
         res.status(200).send({
             success:true,
             message:"logged in",
@@ -100,6 +102,7 @@ const auth=(req,res,next)=>{
     try{
         const verified=jwt.verify(token, publicKey,{algorithms: ["RS256"]})
         req.user=verified
+        console.log(verified)
         next()
     }catch(err){
         res.send({
@@ -195,6 +198,7 @@ app.post('/delete',auth,async (req,res)=>{
         })
     }
     if(delresult.length!==0){
+        console.log(req.header)
         delId=req.body.cardId
         delTitle=req.body.title
         delDesc=req.body.description
@@ -241,6 +245,7 @@ app.post('/delete',auth,async (req,res)=>{
 app.post('/save',auth,async (req,res)=>{
     const user_id=req.user.user_id
     const username=req.user.username
+    console.log(user_id)
     try{
         result=await Database.find({_id:req.user.user_id}) 
     }
@@ -334,6 +339,7 @@ app.post('/save',auth,async (req,res)=>{
 })
 
 app.get('/get_data',auth,async (req,res)=>{
+    console.log(req.user.user_id)
     try{
         result=await Database.find({_id:req.user.user_id})
         res.json(result)

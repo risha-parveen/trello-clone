@@ -148,19 +148,6 @@ const addDeleteCardEventListener=(box_no,description)=>{
     }
 }
 
-/*<div id="drag-with-colour" class="dragdemo" draggable="true">drag me</div>
-<script>
-document.getElementById("drag-with-colour").addEventListener("dragstart", function(e) {
-    this.style.backgroundColor = "red";
-    e.dataTransfer.setDragImage(img, 0, 0);
-}, false);
-document.getElementById("drag-with-colour").addEventListener("dragend", function(e) {
-    this.style.backgroundColor = "green";
-}, false);
-</script>*/
-
-
-
 const addCard=async (box_no,description,newly)=>{
     const cardnode=`
         <div class="card-combo" draggable="true">
@@ -312,9 +299,22 @@ const showMessage=(message)=>{
     }, 3000);
 }
 
+const deleteAllCards=()=>{
+    for(let i in cardArea){
+        cardArea[i].innerHTML=""
+        cardArea[i].innerHTML=`
+                <div class="card-combo" style="height:20px" draggable="true">
+                    <div class="card-drop"></div>
+                </div>
+                `
+    }
+    
+}
+
 logout.addEventListener('click',()=>{
     localStorage.clear()
     refreshFields()
+    deleteAllCards()
     mainboardContainer.style.display="none"
     loginContainer.style.display=""
 })
