@@ -300,15 +300,14 @@ const showMessage=(message)=>{
 }
 
 const deleteAllCards=()=>{
-    for(let i in cardArea){
-        cardArea[i].innerHTML=""
-        cardArea[i].innerHTML=`
-                <div class="card-combo" style="height:20px" draggable="true">
-                    <div class="card-drop"></div>
-                </div>
-                `
+    console.log(cardArea[2].children.length)
+    console.log(cardArea.length)
+    for(let i=0;i<cardArea.length;i++){
+        console.log(cardArea[i].children.length)
+        while(cardArea[i].children.length!==1) {
+            cardArea[i].removeChild(cardArea[i].lastElementChild)
+        }
     }
-    
 }
 
 logout.addEventListener('click',()=>{
