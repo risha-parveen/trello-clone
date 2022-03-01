@@ -13,7 +13,7 @@ process.on('unhandledRejection',error=>{
 })
 
 try{
-    mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
+    mongoose.connect('mongodb://127.0.0.1:27017/TrelloDB',{useNewUrlParser:true})
 }catch(err){
     console.log(err)
 }
