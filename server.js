@@ -8,7 +8,7 @@ const jwt=require('jsonwebtoken')
 const fs=require('fs')
 const registerValidation=require('./validation')
 
-mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
+mongoose.connect('mongodb://127.0.0.1:27017/TrelloDB',{useNewUrlParser:true})
 
 const Database=require('./models/schema')
 const user_db=require('./models/user_schema')
