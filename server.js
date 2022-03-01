@@ -8,6 +8,10 @@ const jwt=require('jsonwebtoken')
 const fs=require('fs')
 const registerValidation=require('./validation')
 
+process.on('unhandledRejection',error=>{
+    console.log('unhandledRejection',error.message)
+})
+
 try{
     mongoose.connect('mongodb://localhost:27017/TrelloDB',{useNewUrlParser:true})
 }catch(err){
