@@ -59,7 +59,6 @@ app.post('/sign_up', async (req,res)=>{
             try{
                 let user=await user_db.insertMany(newUser)
                 if(user){
-                    console.log(user)
                     res.status(200).send({
                         success:true,
                         user_id:user[0]._id,

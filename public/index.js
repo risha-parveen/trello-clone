@@ -48,7 +48,6 @@ const generateNewId=(title)=>{
 
 for(let col=0;col<cardArea.length;col++){
     cardArea[col].addEventListener('dragstart',e=>{
-        console.log(e.target)
         dragItem=e.target
         from=columnTitle[col].innerHTML
         index1=Array.prototype.indexOf.call(e.target.parentNode.children, e.target)
@@ -300,10 +299,7 @@ const showMessage=(message)=>{
 }
 
 const deleteAllCards=()=>{
-    console.log(cardArea[2].children.length)
-    console.log(cardArea.length)
     for(let i=0;i<cardArea.length;i++){
-        console.log(cardArea[i].children.length)
         while(cardArea[i].children.length!==1) {
             cardArea[i].removeChild(cardArea[i].lastElementChild)
         }
