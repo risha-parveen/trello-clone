@@ -20,6 +20,7 @@ const passwordfield=document.getElementById('password-field')
 const messagelabel=document.getElementById('message-label')
 const back=document.getElementById('back')
 const logout=document.getElementById('logout')
+const usernameTag=document.getElementById('username-tag')
 
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
@@ -239,6 +240,7 @@ const saveData= async (contents,token)=>{
 
 const renderData=(json)=>{
     let data=json[0]
+    usernameTag.innerHTML=data.username
     for(let i in data){
         switch(i){
             case "To Do":
@@ -333,6 +335,7 @@ signInButton.addEventListener('click',async ()=>{
         if(signInResponse.success===true){
             await getData(signInResponse.token)
             token=signInResponse.token
+            usernameTag.innerHTML=data.username
             localStorage.setItem("token",token)
             mainboardContainer.style.display=""
             loginContainer.style.display="none"                   
@@ -406,9 +409,10 @@ signUpButton.addEventListener('click',async ()=>{
 const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
     if(!token){
-        mainboardContainer.style.display="none"
+        loginContainer.style.display=""
     }
     if(token){
+        mainboardContainer.style.display=""
         const result=await getData(token)
         if(result.success===false){
             mainboardContainer.style.display="none"
@@ -456,4 +460,10 @@ const signIn=async(contents)=>{
     }
 }
 
-window.onload=checkLocalStorage()
+const begin=()=>{
+    loginContainer.style.display="none"
+    mainboardContainer.style.display="none"
+    checkLocalStorage()
+}
+
+window.onload=begin()

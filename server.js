@@ -355,6 +355,7 @@ app.get('/get_data',auth,async (req,res)=>{
     try{
         result=await Database.find({_id:req.user.user_id})
         res.json(result)
+        console.log(result)
     }
     catch(error){
         res.status(500).send({
