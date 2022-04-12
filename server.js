@@ -65,6 +65,14 @@ app.post('/sign_up', async (req,res)=>{
                         username:username,
                         message:"user registered successfully"
                     })
+                    let first_data={
+                        _id:user[0]._id,
+                        username:user[0].username,
+                        'To Do':[],
+                        'Doing':[],
+                        'Done':[]
+                    }
+                    let first_record=await Database.insertMany(first_data)
                 }
             }catch(err){
                 console.log(err)
@@ -355,7 +363,6 @@ app.get('/get_data',auth,async (req,res)=>{
     try{
         result=await Database.find({_id:req.user.user_id})
         res.json(result)
-        console.log(result)
     }
     catch(error){
         res.status(500).send({

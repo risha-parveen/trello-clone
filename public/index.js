@@ -287,12 +287,6 @@ const getData=async (token)=>{
     
 }
 
-const refreshFields=()=>{
-    usernamefield.value=""
-    passwordfield.value=""
-    confirmfield.value=""
-}
-
 const showMessage=(message)=>{
     messagelabel.innerHTML=message
     setTimeout(() => {
@@ -310,6 +304,7 @@ const deleteAllCards=()=>{
 
 logout.addEventListener('click',()=>{
     localStorage.clear()
+    textArea.value=""
     refreshFields()
     deleteAllCards()
     mainboardContainer.style.display="none"
@@ -405,10 +400,15 @@ signUpButton.addEventListener('click',async ()=>{
     }                
 })
 
+const refreshFields=()=>{
+    usernamefield.value=""
+    passwordfield.value=""
+    confirmfield.value=""
+}
 
 const checkLocalStorage=async ()=>{
     token=localStorage.getItem("token")
-    if(!token){
+    if(!token){   
         loginContainer.style.display=""
     }
     if(token){
@@ -461,8 +461,10 @@ const signIn=async(contents)=>{
 }
 
 const begin=()=>{
+    refreshFields()
+    textArea.value=""
     loginContainer.style.display="none"
-    mainboardContainer.style.display="none"
+    mainboardContainer.style.display="none"    
     checkLocalStorage()
 }
 
