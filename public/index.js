@@ -21,7 +21,7 @@ const messagelabel=document.getElementById('message-label')
 const back=document.getElementById('back')
 const logout=document.getElementById('logout')
 const usernameTag=document.getElementById('username-tag')
-
+const listDeleteButton=document.getElementsByClassName('list-delete')
 
 let title,id,description,cardId,json,data,dragItem,from,to,index,index1,newId=null
 
@@ -114,17 +114,41 @@ function insertAfter(newNode, existingNode) {
 
 for(let box_no=0; box_no<addBtn.length; box_no++){
     addBtn[box_no].addEventListener("click",()=>{
+        textArea[box_no].focus()
         if(textArea[box_no].value.trim().length!=0){
             description=textArea[box_no].value.replace(/[\r\n]+/g," ")
             addCard(box_no,description,true)        
         }
     })
+    textArea[box_no].addEventListener("keypress",e=>{
+        if(e.key==='Enter'){
+            if(textArea[box_no].value.trim().length!=0){
+                description=textArea[box_no].value.replace(/[\r\n]+/g," ")
+                addCard(box_no,description,true)        
+            }
+        }
+    })
+    textArea[box_no].addEventListener('click',e=>{
+        textArea[box_no].style.height="100px"
+        addBtn[box_no].style.visibility="visible"
+        listDeleteButton[box_no].style.visibility="visible"
+        textArea[box_no].style.backgroundColor="white"
+    })
+    listDeleteButton[box_no].addEventListener('click',e=>{
+        listDeleteButton[box_no].style.visibility="hidden"
+        textArea[box_no].style.height="39px"
+        addBtn[box_no].style.visibility="hidden"
+        textArea[box_no].value=""
+        textArea[box_no].style.backgroundColor="rgb(202, 199, 199)"
+    })
 }
+
+
 
 const addDeleteCardEventListener=(box_no,description)=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
         if(cardArea[box_no].children[i].firstElementChild.firstElementChild===null) continue
-        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('dblclick',async e=>{
+        cardArea[box_no].children[i].firstElementChild.firstElementChild.addEventListener('click',async e=>{
             let index=Array.prototype.indexOf.call(e.target.parentNode.parentNode.parentNode.children, e.target.parentNode.parentNode)
             index-=1
             title=e.target.parentNode.parentNode.parentNode.parentNode.parentNode.firstElementChild.innerHTML
@@ -400,6 +424,34 @@ signUpButton.addEventListener('click',async ()=>{
     }                
 })
 
+usernamefield.addEventListener('keypress',e=>{
+    if(e.key==='Enter'){
+        e.preventDefault()
+        passwordfield.focus()
+    }
+})
+
+passwordfield.addEventListener('keypress',e=>{
+    if(e.key==='Enter'){
+        if(confirmfield.style.display==="none"){
+            e.preventDefault()
+            signInButton.click()
+            usernamefield.focus()
+        }
+        else{
+            confirmfield.focus()
+        }
+    }
+})
+
+confirmfield.addEventListener('keypress',e=>{
+    if(e.key==='Enter'){
+        e.preventDefault()
+        signUpButton.click()
+        usernamefield.focus()
+    }
+})
+
 const refreshFields=()=>{
     usernamefield.value=""
     passwordfield.value=""
@@ -464,7 +516,7 @@ const begin=()=>{
     refreshFields()
     textArea.value=""
     loginContainer.style.display="none"
-    mainboardContainer.style.display="none"    
+    mainboardContainer.style.display="none" 
     checkLocalStorage()
 }
 

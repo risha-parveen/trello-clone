@@ -12,9 +12,9 @@
         <h1>Trello clone</h1>
         <div id="login-column" >
             <div id="login-board">
-                <input id="username-field" spellcheck="false" autocomplete="off" placeholder="username">
-                <input id="password-field" type="password" autocomplete="off" placeholder="password">
-                <input id="confirm-field" type="password" autocomplete="off" placeholder="confirm password" style="display:none">
+                <input class="field" id="username-field" spellcheck="false" autocomplete="off" placeholder="username">
+                <input class="field" id="password-field" type="password" autocomplete="off" placeholder="password">
+                <input class="field" id="confirm-field" type="password" autocomplete="off" placeholder="confirm password" style="display:none">
                 <label id="message-label" style="text-align:center">  </label>
                 <button id="sign-in-button">SIGN IN</button>
                 <button id="sign-up-button" style="display:none">SIGN UP</button>
@@ -39,8 +39,9 @@
                                 <div class="card-drop"></div>
                             </div>
                         </div>
-                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                        <button class="add-item">Add Card</button>
+                        <textarea class="text-area" placeholder="Add to your list" ></textarea>
+                        <button class="add-item" style="visibility:hidden">Add Card</button>
+                        <button class="list-delete" style="visibility:hidden">x</button>
                     </div>
                 </div>
             </div> 
@@ -53,8 +54,9 @@
                                 <div class="card-drop"></div>
                             </div>
                         </div>
-                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                        <button class="add-item">Add Card</button>
+                        <textarea class="text-area" placeholder="Add to your list" ></textarea>
+                        <button class="add-item" style="visibility:hidden">Add Card</button>
+                        <button class="list-delete"  style="visibility:hidden">x</button>
                     </div>
                 </div>
             </div> 
@@ -67,8 +69,9 @@
                                 <div class="card-drop"></div>
                             </div>
                         </div>
-                        <textarea class="text-area" placeholder="Enter the description" ></textarea>
-                        <button class="add-item">Add Card</button>
+                        <textarea class="text-area" placeholder="Add to your list" ></textarea>
+                        <button class="add-item" style="visibility:hidden">Add Card</button>
+                        <button class="list-delete"  style="visibility:hidden">x</button>
                     </div>
                 </div>
             </div> 
