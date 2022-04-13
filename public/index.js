@@ -33,6 +33,19 @@ const cardIdArray={
     'Done':[]
 }
 
+const openAllTextAreasIfEmpty=()=>{
+    let index=0
+    for(let i in cardIdArray){
+        if(cardIdArray[i].length===0){
+            textArea[index].style.height="100px"
+            addBtn[index].style.visibility="visible"
+            listDeleteButton[index].style.visibility="visible"
+            textArea[index].style.backgroundColor="white"
+        }
+        index+=1
+    }
+}
+
 const generateNewId=(title)=>{
     
     let array=cardIdArray[title]
@@ -133,6 +146,7 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
         addBtn[box_no].style.visibility="visible"
         listDeleteButton[box_no].style.visibility="visible"
         textArea[box_no].style.backgroundColor="white"
+        textArea[box_no].style.cursor="auto"
     })
     listDeleteButton[box_no].addEventListener('click',e=>{
         listDeleteButton[box_no].style.visibility="hidden"
@@ -142,8 +156,6 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
         textArea[box_no].style.backgroundColor="rgb(202, 199, 199)"
     })
 }
-
-
 
 const addDeleteCardEventListener=(box_no,description)=>{
     for(let i=0;i<cardArea[box_no].children.length;i++){
@@ -289,6 +301,17 @@ const renderData=(json)=>{
             cardIdArray[title].push(cardId)
         }
     }
+    let index=0
+    for(let i in cardIdArray){
+        if(cardIdArray[i].length===0){
+            textArea[index].style.height="100px"
+            addBtn[index].style.visibility="visible"
+            listDeleteButton[index].style.visibility="visible"
+            textArea[index].style.backgroundColor="white"
+            textArea[index].style.cursor="auto"
+        }
+        index+=1
+    }   
 }
 
 const getData=async (token)=>{
