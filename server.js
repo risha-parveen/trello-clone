@@ -30,7 +30,7 @@ app.use(express.json())
 const privateKey=fs.readFileSync('./privateKey.txt')
 const publicKey=fs.readFileSync('./publicKey.txt')
 
-app.post('/sign_up', async (req,res)=>{
+app.post('/api/sign_up', async (req,res)=>{
     let username=req.body.username
     let password=req.body.password 
     const {error}=registerValidation(req.body)
@@ -84,7 +84,7 @@ app.post('/sign_up', async (req,res)=>{
     }
 })
 
-app.post('/sign_in',async (req,res)=>{
+app.post('/api/sign_in',async (req,res)=>{
     try{
         user=await user_db.find({"username":req.body.username})
         if(user.length===0)
@@ -144,7 +144,7 @@ let result,delresult,moveresult,delId,delTitle=null
 //from
 //to
 
-app.post('/move',auth,async (req,res)=>{
+app.post('/api/move',auth,async (req,res)=>{
     const user_id=req.user.user_id
     try{
         moveresult=await Database.find({_id:user_id})
@@ -210,7 +210,7 @@ app.post('/move',auth,async (req,res)=>{
 //description
 //title
 
-app.post('/delete',auth,async (req,res)=>{
+app.post('/api/delete',auth,async (req,res)=>{
     const user_id=req.user.user_id
     try{
         delresult=await Database.find({_id:user_id})
@@ -264,7 +264,7 @@ app.post('/delete',auth,async (req,res)=>{
 //cardId
 //description
 
-app.post('/save',auth,async (req,res)=>{
+app.post('/api/save',auth,async (req,res)=>{
     const user_id=req.user.user_id
     const username=req.user.username
     try{
@@ -359,7 +359,7 @@ app.post('/save',auth,async (req,res)=>{
     }
 })
 
-app.get('/get_data',auth,async (req,res)=>{
+app.get('/api/get_data',auth,async (req,res)=>{
     try{
         result=await Database.find({_id:req.user.user_id})
         res.json(result)

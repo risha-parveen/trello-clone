@@ -223,7 +223,7 @@ const addCard=async (box_no,description,newly)=>{
 }
 
 const moveData= async (contents,token)=>{
-    const response=await fetch('/move',{
+    const response=await fetch('/api/move',{
         method:'POST',
         headers:{
             'Accept':'application/json',
@@ -238,7 +238,7 @@ const moveData= async (contents,token)=>{
 
 const deleteData= async (contents,token)=>{
     try{
-        const response=await fetch('/delete',{
+        const response=await fetch('/api/delete',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
@@ -257,7 +257,7 @@ const deleteData= async (contents,token)=>{
 
 const saveData= async (contents,token)=>{
     try{
-       const response=await fetch('/save',{
+       const response=await fetch('/api/save',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
@@ -317,7 +317,7 @@ const renderData=(json)=>{
 const getData=async (token)=>{
     
     try{
-        const response=await fetch('/get_data',{
+        const response=await fetch('/api/get_data',{
             method:'GET',
             headers:{
                 'Accept':'application/json',
@@ -501,7 +501,7 @@ const checkLocalStorage=async ()=>{
 
 const signUp=async (contents)=>{
     try{
-        const response=await fetch('/sign_up',{
+        const response=await fetch('/api/sign_up',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
@@ -519,7 +519,7 @@ const signUp=async (contents)=>{
 
 const signIn=async(contents)=>{
     try{
-        const response=await fetch('/sign_in',{
+        const response=await fetch('/api/sign_in',{
             method:'POST',
             headers:{
                 'Accept':'application/json',
