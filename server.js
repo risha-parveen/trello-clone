@@ -7,7 +7,8 @@ const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 const fs=require('fs')
 const registerValidation=require('./validation')
-
+var morgan = require('morgan')
+app.use(morgan('combined'))
 process.on('unhandledRejection',error=>{
     console.log('unhandledRejection',error.message)
 })
@@ -371,4 +372,12 @@ app.get('/api/get_data',auth,async (req,res)=>{
     }
 })
 
-app.listen(5000)
+
+
+
+
+
+
+app.listen(5000,()=>{
+    console.log('server listening')
+})
