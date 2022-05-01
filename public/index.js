@@ -129,7 +129,8 @@ for(let box_no=0; box_no<addBtn.length; box_no++){
     addBtn[box_no].addEventListener("click",()=>{
         textArea[box_no].focus()
         if(textArea[box_no].value.trim().length!=0){
-            description=textArea[box_no].value.replace(/[\r\n]+/g," ")
+            description=String.raw`${textArea[box_no].value.replace(/[\r\n]+/g," ")}`
+            console.log(typeof description)
             addCard(box_no,description,true)        
         }
     })
@@ -192,6 +193,25 @@ const addCard=async (box_no,description,newly)=>{
             <div class="card-drop"></div>
         </div>
     `
+    let cardnode2=document.createElement('div')
+    cardnode2.classList.add('card-combo')
+    cardnode2.draggable=true
+
+    let card2=document.createElement('div')
+    card2.classList.add('card')
+
+    let button2=document.createElement('button')
+    button2.classList.add('delete-card')
+    button2.textContent='x'
+
+    cardnode2.appendChild(card2)
+    card2.textContent=description
+    card2.appendChild(button2)
+
+    carddrop=document.createElement('div')
+    carddrop.classList.add('card-drop')
+    cardnode2.appendChild(carddrop)
+
     if(newly){
         title=columnTitle[box_no].innerHTML
         cardId=generateNewId(title)
@@ -206,7 +226,8 @@ const addCard=async (box_no,description,newly)=>{
         const response=await saveData(data,token)
 
         if(response.success==true){
-            cardArea[box_no].innerHTML+=cardnode
+            //cardArea[box_no].innerHTML+=cardnode
+            cardArea[box_no].appendChild(cardnode2)
             textArea[box_no].value=""
             cardIdArray[title].push(cardId)
             addDeleteCardEventListener(box_no,description,false)
@@ -542,5 +563,7 @@ const begin=()=>{
     mainboardContainer.style.display="none" 
     checkLocalStorage()
 }
+
+
 
 window.onload=begin()

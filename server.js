@@ -373,11 +373,6 @@ app.get('/api/get_data',auth,async (req,res)=>{
 })
 
 
-
-
-
-
-
 app.listen(5000,()=>{
     console.log('server listening')
 })
