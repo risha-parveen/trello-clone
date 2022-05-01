@@ -186,16 +186,10 @@ const addDeleteCardEventListener=(box_no,description)=>{
 }
 
 const addCard=async (box_no,description,newly)=>{
-    const cardnode=`
-        <div class="card-combo" draggable="true">
-            <div class="card">${description}<button class="delete-card">x</button>
-            </div>
-            <div class="card-drop"></div>
-        </div>
-    `
-    let cardnode2=document.createElement('div')
-    cardnode2.classList.add('card-combo')
-    cardnode2.draggable=true
+    
+    let cardnode=document.createElement('div')
+    cardnode.classList.add('card-combo')
+    cardnode.draggable=true
 
     let card2=document.createElement('div')
     card2.classList.add('card')
@@ -204,13 +198,13 @@ const addCard=async (box_no,description,newly)=>{
     button2.classList.add('delete-card')
     button2.textContent='x'
 
-    cardnode2.appendChild(card2)
+    cardnode.appendChild(card2)
     card2.textContent=description
     card2.appendChild(button2)
 
     carddrop=document.createElement('div')
     carddrop.classList.add('card-drop')
-    cardnode2.appendChild(carddrop)
+    cardnode.appendChild(carddrop)
 
     if(newly){
         title=columnTitle[box_no].innerHTML
@@ -226,8 +220,7 @@ const addCard=async (box_no,description,newly)=>{
         const response=await saveData(data,token)
 
         if(response.success==true){
-            //cardArea[box_no].innerHTML+=cardnode
-            cardArea[box_no].appendChild(cardnode2)
+            cardArea[box_no].appendChild(cardnode)
             textArea[box_no].value=""
             cardIdArray[title].push(cardId)
             addDeleteCardEventListener(box_no,description,false)
@@ -237,7 +230,7 @@ const addCard=async (box_no,description,newly)=>{
         }
     }
     else{
-        cardArea[box_no].innerHTML+=cardnode
+        cardArea[box_no].appendChild(cardnode)
         textArea[box_no].value=""
         addDeleteCardEventListener(box_no,description)
     }  
